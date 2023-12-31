@@ -1,3 +1,5 @@
+package main.java;
+
 public class Column {
     public Token[] rows = new Token[5];
 
