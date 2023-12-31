@@ -1,14 +1,14 @@
-package main.java;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class VierGewinntTest {
 
     @Test
     public void TestIfAllFieldsAreEmpty() {
-        VierGewinnt vg = new VierGewinnt();
+        VierGewinnt vg = new
+                VierGewinnt();
 
         // Check if all fields are empty
         for (int i = 0; i < vg.columns.length; i++) {
