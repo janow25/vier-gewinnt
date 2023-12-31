@@ -25,6 +25,6 @@ jobs:
       - name: Test
         run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
 
-      - name: Report
-        if: success() || failure()
-        uses: scacap/action-surefire-report@v1
+      #- name: Report
+      #  if: success() || failure()
+      #  uses: scacap/action-surefire-report@v1
