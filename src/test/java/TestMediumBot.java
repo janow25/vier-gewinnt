@@ -52,7 +52,6 @@ public class TestMediumBot {
 
         //Check if the bot wins instead of stopping the player from winning
         vg.getBot().makeMove(vg);
-        System.out.println(vg);
         assertEquals(VierGewinnt.botToken, vg.getColumns()[1].getRows()[3]);
 
         //Check if the bot wins
