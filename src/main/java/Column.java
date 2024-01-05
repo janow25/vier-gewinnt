@@ -1,5 +1,13 @@
-public class Column {
-    public Token[] rows;
+import lombok.Getter;
+
+import java.io.*;
+public class Column implements Serializable {
+    //default id
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Getter
+    private Token[] rows;
 
     Column() {
         this.rows = new Token[5];

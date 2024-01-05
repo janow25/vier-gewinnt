@@ -13,7 +13,7 @@ public class HardBot implements Bot {
         int bestScore = 0;
         int column = 0;
 
-        for (int i = 1; i <= vg.getColumns(); i++) {
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
                 int score = CheckForFastestWin(tmpVg, i, depth);
@@ -37,7 +37,7 @@ public class HardBot implements Bot {
             return depth;
         }
 
-        for (int i = 1; i <= vg.getColumns(); i++) {
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 if (depth > 0) {
                     return CheckForFastestWin(tmpVg, i, depth - 1);
@@ -49,7 +49,7 @@ public class HardBot implements Bot {
     }
     public int makeMove(VierGewinnt vg) {
         // Check if there is a column where the bot can win
-        for (int i = 1; i <= vg.getColumns(); i++) {
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
                 tmpVg.addToken(i, myToken);
@@ -61,7 +61,7 @@ public class HardBot implements Bot {
         }
 
         // Check if there is a column where the player can win
-        for (int i = 1; i <= vg.getColumns(); i++) {
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
                 tmpVg.addToken(i, myToken.other());
