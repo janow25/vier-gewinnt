@@ -1,12 +1,16 @@
 public class Column {
-    public Token[] rows = new Token[5];
+    public Token[] rows;
 
     Column() {
-        rows[0] = Token.empty;
-        rows[1] = Token.empty;
-        rows[2] = Token.empty;
-        rows[3] = Token.empty;
-        rows[4] = Token.empty;
+        this.rows = new Token[5];
+
+        java.util.Arrays.fill(this.rows, Token.empty);
+    }
+
+    Column(int rows) {
+        this.rows = new Token[rows];
+
+        java.util.Arrays.fill(this.rows, Token.empty);
     }
 
     /// This Method adds a new Token to the current Column.
@@ -19,5 +23,23 @@ public class Column {
         }
 
         rows[empty] = token;
+    }
+
+    /// This Method checks if the current Column is full
+    public boolean isFull() {
+        for (Token token : rows) {
+            if (token.equals(Token.empty)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Column copy() {
+        Column copy = new Column(rows.length);
+        for (int i = 0; i < rows.length; i++) {
+            copy.rows[i] = rows[i];
+        }
+        return copy;
     }
 }
