@@ -1,7 +1,9 @@
-import GUI.Connect4;
+import GUI.Connect4GUI;
 
 public class Main {
     public static void main(String[] args) {
-        Connect4.getInstance();
+        //VierGewinnt vg = new VierGewinnt(5,Difficulty.medium);
+        //vg.play();
+        Connect4GUI.getInstance();
     }
 }

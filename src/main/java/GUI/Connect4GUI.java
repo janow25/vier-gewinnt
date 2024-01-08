@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Connect4 implements ActionListener, MouseListener, MouseMotionListener {
-    private static Connect4 instance;
+public class Connect4GUI implements ActionListener, MouseListener, MouseMotionListener {
+    private static Connect4GUI instance;
 
     private static MyFrame frame;
     private static MyPanel panel;
@@ -17,7 +17,7 @@ public class Connect4 implements ActionListener, MouseListener, MouseMotionListe
     private static int tokenHeight = panelHeight / (1 + playingRows + 1);
     private static boolean playerWon = false;
 
-    private Connect4() {
+    private Connect4GUI() {
         frame = new MyFrame();
         panel = new MyPanel();
 
@@ -34,9 +34,9 @@ public class Connect4 implements ActionListener, MouseListener, MouseMotionListe
     }
 
     //Singleton
-    public static Connect4 getInstance() {
+    public static Connect4GUI getInstance() {
         if(instance == null) {
-            instance = new Connect4();
+            instance = new Connect4GUI();
         }
         return instance;
     }
