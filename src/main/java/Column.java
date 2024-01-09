@@ -1,8 +1,8 @@
 public class Column {
-    public Token[] rows;
+    private Token[] rows;
 
     Column() {
-        this.rows = new Token[5];
+        this.rows = new Token[6];
 
         java.util.Arrays.fill(this.rows, Token.empty);
     }
@@ -41,5 +41,9 @@ public class Column {
             copy.rows[i] = rows[i];
         }
         return copy;
+    }
+
+    public Token[] getRows() {
+        return rows;
     }
 }

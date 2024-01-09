@@ -7,21 +7,27 @@ import java.awt.event.*;
 public class Connect4GUI implements ActionListener, MouseListener, MouseMotionListener {
     private static Connect4GUI instance;
 
-    private static MyFrame frame;
-    private static MyPanel panel;
-    private static final int panelWidth = 1300;
-    private static final int panelHeight = 1000;
-    private static int playingRows = 6;
-    private static int playingColumns = 7;
-    private static int tokenWidth = panelWidth / (1 + playingColumns + 1);
-    private static int tokenHeight = panelHeight / (1 + playingRows + 1);
-    private static boolean playerWon = false;
+    private MyFrame frame;
+    private MyPanel panel;
+    private final int panelWidth = 1300;
+    private final int panelHeight = 1000;
+    private int playingRows = 6;
+    private int playingColumns = 8;
+    private int tokenWidth = panelWidth / (1 + playingColumns + 1);
+    private int tokenHeight = panelHeight / (1 + playingRows + 1);
+    private boolean playerWon = false;
 
-    private Connect4GUI() {
+    //Singleton
+    public static Connect4GUI getInstance() {
+        if(instance == null) {
+            instance = new Connect4GUI();
+        }
+        return instance;
+    }
+
+    public void createGUI() {
         frame = new MyFrame();
         panel = new MyPanel();
-
-
 
         createPlayingField();
 
@@ -33,15 +39,7 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
         frame.setVisible(true);
     }
 
-    //Singleton
-    public static Connect4GUI getInstance() {
-        if(instance == null) {
-            instance = new Connect4GUI();
-        }
-        return instance;
-    }
-
-    public static void createPlayingField() {
+    public void createPlayingField() {
         panel.setPreferredSize(new Dimension(getPanelWidth(), getPanelHeight()));
         panel.setLayout(new BorderLayout());
 
@@ -50,7 +48,7 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
         frame.add(panel, BorderLayout.CENTER);
     }
 
-    public static void createPointDisplay() {
+    public void createPointDisplay() {
         JPanel points = new JPanel();
         points.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
         points.setLayout(new BoxLayout(points, BoxLayout.LINE_AXIS));
@@ -72,7 +70,7 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
         points.add(Box.createGlue());
     }
 
-    public static void createMenuBar() {
+    public void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         frame.add(menuBar, BorderLayout.NORTH);
 
@@ -97,9 +95,7 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
     public void mouseClicked(MouseEvent e) {}
 
     @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
+    public void mousePressed(MouseEvent e) {}
 
     @Override
     public void mouseReleased(MouseEvent e) {}
@@ -114,35 +110,55 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
     public void mouseDragged(MouseEvent e) {}
 
     @Override
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(MouseEvent e) {}
 
-    }
-
-    public static int getPanelWidth() {
+    public int getPanelWidth() {
         return panelWidth;
     }
 
-    public static int getPanelHeight() {
+    public int getPanelHeight() {
         return panelHeight;
     }
 
-    public static int getPlayingRows() {
+    public int getPlayingRows() {
         return playingRows;
     }
 
-    public static int getPlayingColumns() {
+    public void setPlayingRows(int playingRows) {
+        this.playingRows = playingRows;
+        setTokenHeight(this.playingRows);
+    }
+
+    public int getPlayingColumns() {
         return playingColumns;
     }
 
-    public static int getTokenWidth() {
+    public void setPlayingColumns(int playingColumns) {
+        this.playingColumns = playingColumns;
+        setTokenWidth(this.playingColumns);
+    }
+
+    public int getTokenWidth() {
         return tokenWidth;
     }
 
-    public static int getTokenHeight() {
+    private void setTokenWidth(int playingColumns) {
+        this.tokenWidth = this.panelWidth / (1 + playingColumns + 1);
+    }
+
+    public int getTokenHeight() {
         return tokenHeight;
     }
 
-    public static boolean hasPlayerWon() {
+    private void setTokenHeight(int playingRows) {
+        this.tokenHeight = this.panelHeight / (1 + playingRows + 1);
+    }
+
+    public boolean hasPlayerWon() {
         return playerWon;
+    }
+
+    public void setPlayerWon(boolean playerWon) {
+        this.playerWon = playerWon;
     }
 }

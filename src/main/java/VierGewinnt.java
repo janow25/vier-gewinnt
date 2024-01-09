@@ -1,17 +1,23 @@
+import GUI.Connect4GUI;
+
 import java.util.Scanner;
 
 public class VierGewinnt {
-    Column[] columns;
+    Column[] columnsArrays;
+    private int rows;
+    private int columns;
 
     Bot bot;
     Difficulty difficulty = Difficulty.noBot;
     int rounds = 0;
 
     VierGewinnt() {
-        columns = new Column[5];
+        this.rows = 6;
+        this.columns = 7;
+        this.columnsArrays = new Column[columns];
 
-        for (int i = 0; i < columns.length; i++) {
-            columns[i] = new Column();
+        for (int i = 0; i < columnsArrays.length; i++) {
+            columnsArrays[i] = new Column(rows);
         }
     }
 
@@ -20,10 +26,12 @@ public class VierGewinnt {
     }
 
     VierGewinnt(int columns, int rows) {
-        this.columns = new Column[columns];
+        this.columns = columns;
+        this.rows = rows;
+        this.columnsArrays = new Column[columns];
 
-        for (int i = 0; i < this.columns.length; i++) {
-            this.columns[i] = new Column(rows);
+        for (int i = 0; i < this.columnsArrays.length; i++) {
+            this.columnsArrays[i] = new Column(rows);
         }
     }
 
@@ -81,8 +89,8 @@ public class VierGewinnt {
         System.out.println("Player " + token + " enter column: ");
         int column = sc.nextInt();
 
-        while (column < 1 || column > getColumns() || columnIsFull(column)) {
-            System.out.println("Invalid column. [1-" + getColumns() + "]");
+        while (column < 1 || column > getColumnsArrays() || columnIsFull(column)) {
+            System.out.println("Invalid column. [1-" + getColumnsArrays() + "]");
             column = sc.nextInt();
         }
 
@@ -92,11 +100,11 @@ public class VierGewinnt {
     /// This Method adds a new Token to the current Column. The column is not zero based. So if you want to add a Token to the first column you have to pass 1 as the column parameter.
     public void addToken(int column, Token token) {
         rounds++;
-        columns[column-1].addToken(token);
+        columnsArrays[column-1].addToken(token);
     }
 
     public boolean columnIsFull(int column) {
-        return columns[column-1].isFull();
+        return columnsArrays[column-1].isFull();
     }
 
     public GameStatus checkForWin() {
@@ -106,27 +114,27 @@ public class VierGewinnt {
             return GameStatus.draw;
         }
 
-        for (int i = 0; i < columns.length; i++) {
-            for (int j = 0; j < columns[i].rows.length; j++) {
-                if (columns[i].rows[j] != Token.empty) {
-                    if (j < columns[i].rows.length - 3) {
-                        if (columns[i].rows[j] == columns[i].rows[j + 1] && columns[i].rows[j] == columns[i].rows[j + 2] && columns[i].rows[j] == columns[i].rows[j + 3]) {
-                            winner = columns[i].rows[j].toGameStatus();
+        for (int i = 0; i < columnsArrays.length; i++) {
+            for (int j = 0; j < columnsArrays[i].getRows().length; j++) {
+                if (columnsArrays[i].getRows()[j] != Token.empty) {
+                    if (j < columnsArrays[i].getRows().length - 3) {
+                        if (columnsArrays[i].getRows()[j] == columnsArrays[i].getRows()[j + 1] && columnsArrays[i].getRows()[j] == columnsArrays[i].getRows()[j + 2] && columnsArrays[i].getRows()[j] == columnsArrays[i].getRows()[j + 3]) {
+                            winner = columnsArrays[i].getRows()[j].toGameStatus();
                         }
                     }
-                    if (i < columns.length - 3) {
-                        if (columns[i].rows[j] == columns[i + 1].rows[j] && columns[i].rows[j] == columns[i + 2].rows[j] && columns[i].rows[j] == columns[i + 3].rows[j]) {
-                            winner = columns[i].rows[j].toGameStatus();
+                    if (i < columnsArrays.length - 3) {
+                        if (columnsArrays[i].getRows()[j] == columnsArrays[i + 1].getRows()[j] && columnsArrays[i].getRows()[j] == columnsArrays[i + 2].getRows()[j] && columnsArrays[i].getRows()[j] == columnsArrays[i + 3].getRows()[j]) {
+                            winner = columnsArrays[i].getRows()[j].toGameStatus();
                         }
                     }
-                    if (i < columns.length - 3 && j < columns[i].rows.length - 3) {
-                        if (columns[i].rows[j] == columns[i + 1].rows[j + 1] && columns[i].rows[j] == columns[i + 2].rows[j + 2] && columns[i].rows[j] == columns[i + 3].rows[j + 3]) {
-                            winner = columns[i].rows[j].toGameStatus();
+                    if (i < columnsArrays.length - 3 && j < columnsArrays[i].getRows().length - 3) {
+                        if (columnsArrays[i].getRows()[j] == columnsArrays[i + 1].getRows()[j + 1] && columnsArrays[i].getRows()[j] == columnsArrays[i + 2].getRows()[j + 2] && columnsArrays[i].getRows()[j] == columnsArrays[i + 3].getRows()[j + 3]) {
+                            winner = columnsArrays[i].getRows()[j].toGameStatus();
                         }
                     }
-                    if (i < columns.length - 3 && j > 2) {
-                        if (columns[i].rows[j] == columns[i + 1].rows[j - 1] && columns[i].rows[j] == columns[i + 2].rows[j - 2] && columns[i].rows[j] == columns[i + 3].rows[j - 3]) {
-                            winner = columns[i].rows[j].toGameStatus();
+                    if (i < columnsArrays.length - 3 && j > 2) {
+                        if (columnsArrays[i].getRows()[j] == columnsArrays[i + 1].getRows()[j - 1] && columnsArrays[i].getRows()[j] == columnsArrays[i + 2].getRows()[j - 2] && columnsArrays[i].getRows()[j] == columnsArrays[i + 3].getRows()[j - 3]) {
+                            winner = columnsArrays[i].getRows()[j].toGameStatus();
                         }
                     }
                 }
@@ -135,12 +143,8 @@ public class VierGewinnt {
         return winner;
     }
 
-    public int getRows() {
-        return columns[0].rows.length;
-    }
-
-    public int getColumns() {
-        return columns.length;
+    public int getColumnsArrays() {
+        return columnsArrays.length;
     }
 
     public String toString() {
@@ -153,12 +157,12 @@ public class VierGewinnt {
         str.append(getBorder());
         str.append("\n");
 
-        int rows = columns[0].rows.length;
+        int rows = columnsArrays[0].getRows().length;
 
         for (int i = 0; i < rows; i++) {
             str.append("|");
-            for (Column column : columns) {
-                switch (column.rows[rows - i - 1]) {
+            for (Column column : columnsArrays) {
+                switch (column.getRows()[rows - i - 1]) {
                     case empty -> str.append(empty);
                     case playerOne -> str.append(playerOne);
                     case playerTwo -> str.append(playerTwo);
@@ -177,15 +181,31 @@ public class VierGewinnt {
     }
 
     public String getBorder() {
-        return "_".repeat(columns.length*2+1);
+        return "_".repeat(columnsArrays.length*2+1);
     }
 
     public VierGewinnt copy() {
-        VierGewinnt copy = new VierGewinnt(getColumns(), getRows(), difficulty);
+        VierGewinnt copy = new VierGewinnt(getColumnsArrays(), getRows(), difficulty);
         copy.rounds = rounds;
-        for (int i = 0; i < columns.length; i++) {
-            copy.columns[i] = columns[i].copy();
+        for (int i = 0; i < columnsArrays.length; i++) {
+            copy.columnsArrays[i] = columnsArrays[i].copy();
         }
         return copy;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
     }
 }

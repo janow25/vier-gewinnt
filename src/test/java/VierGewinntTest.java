@@ -10,12 +10,12 @@ public class VierGewinntTest {
         VierGewinnt vg = new VierGewinnt();
 
         assertEquals(vg.getRows(), 5);
-        assertEquals(vg.getColumns(), 5);
+        assertEquals(vg.getColumnsArrays(), 5);
 
         // Check if all fields are empty
-        for (int i = 0; i < vg.columns.length; i++) {
-            for (int j = 0; j < vg.columns[i].rows.length; j++) {
-                assertEquals(Token.empty, vg.columns[i].rows[j]);
+        for (int i = 0; i < vg.columnsArrays.length; i++) {
+            for (int j = 0; j < vg.columnsArrays[i].getRows().length; j++) {
+                assertEquals(Token.empty, vg.columnsArrays[i].getRows()[j]);
             }
         }
     }
@@ -25,12 +25,12 @@ public class VierGewinntTest {
         VierGewinnt vg = new VierGewinnt(10, 8);
 
         assertEquals(vg.getRows(), 8);
-        assertEquals(vg.getColumns(), 10);
+        assertEquals(vg.getColumnsArrays(), 10);
 
         // Check if all fields are empty
-        for (int i = 0; i < vg.getColumns(); i++) {
+        for (int i = 0; i < vg.getColumnsArrays(); i++) {
             for (int j = 0; j < vg.getRows(); j++) {
-                assertEquals(Token.empty, vg.columns[i].rows[j]);
+                assertEquals(Token.empty, vg.columnsArrays[i].getRows()[j]);
             }
         }
     }
@@ -45,10 +45,10 @@ public class VierGewinntTest {
         copy.addToken(1, Token.playerOne);
 
         assertNotEquals(vg.toString(), copy.toString());
-        assertEquals(vg.columns[0].rows[0], copy.columns[0].rows[0]);
-        assertEquals(vg.columns[0].rows[1], copy.columns[0].rows[1]);
+        assertEquals(vg.columnsArrays[0].getRows()[0], copy.columnsArrays[0].getRows()[0]);
+        assertEquals(vg.columnsArrays[0].getRows()[1], copy.columnsArrays[0].getRows()[1]);
 
-        assertNotEquals(vg.columns[0].rows[2], copy.columns[0].rows[2]);
+        assertNotEquals(vg.columnsArrays[0].getRows()[2], copy.columnsArrays[0].getRows()[2]);
     }
 
     @Test
@@ -63,8 +63,8 @@ public class VierGewinntTest {
         vg.addToken(1, Token.playerTwo);
 
         //Check if Token is added
-        assertEquals(Token.playerOne, vg.columns[0].rows[0]);
-        assertEquals(Token.playerTwo, vg.columns[0].rows[1]);
+        assertEquals(Token.playerOne, vg.columnsArrays[0].getRows()[0]);
+        assertEquals(Token.playerTwo, vg.columnsArrays[0].getRows()[1]);
     }
 
     @Test
