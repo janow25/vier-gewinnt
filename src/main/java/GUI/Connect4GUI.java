@@ -43,8 +43,6 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
         panel.setPreferredSize(new Dimension(getPanelWidth(), getPanelHeight()));
         panel.setLayout(new BorderLayout());
 
-
-
         frame.add(panel, BorderLayout.CENTER);
     }
 
