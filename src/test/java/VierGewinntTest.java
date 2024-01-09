@@ -9,13 +9,13 @@ public class VierGewinntTest {
     public void TestIfAllFieldsAreEmpty() {
         VierGewinnt vg = new VierGewinnt();
 
-        assertEquals(vg.getRows(), 5);
-        assertEquals(vg.getColumnsArrays(), 5);
+        assertEquals(vg.getNumberOfRows(), 5);
+        assertEquals(vg.getNumberOfColumns(), 5);
 
         // Check if all fields are empty
-        for (int i = 0; i < vg.columnsArrays.length; i++) {
-            for (int j = 0; j < vg.columnsArrays[i].getRows().length; j++) {
-                assertEquals(Token.empty, vg.columnsArrays[i].getRows()[j]);
+        for (int i = 0; i < vg.getNumberOfColumns(); i++) {
+            for (int j = 0; j < vg.getNumberOfRows(); j++) {
+                assertEquals(Token.empty, vg.getColumns()[i].getRows()[j]);
             }
         }
     }
@@ -24,13 +24,13 @@ public class VierGewinntTest {
     public void TestIfAllFieldsAreEmpty10x8() {
         VierGewinnt vg = new VierGewinnt(10, 8);
 
-        assertEquals(vg.getRows(), 8);
-        assertEquals(vg.getColumnsArrays(), 10);
+        assertEquals(vg.getNumberOfRows(), 8);
+        assertEquals(vg.getNumberOfColumns(), 10);
 
         // Check if all fields are empty
-        for (int i = 0; i < vg.getColumnsArrays(); i++) {
-            for (int j = 0; j < vg.getRows(); j++) {
-                assertEquals(Token.empty, vg.columnsArrays[i].getRows()[j]);
+        for (int i = 0; i < vg.getNumberOfColumns(); i++) {
+            for (int j = 0; j < vg.getNumberOfRows(); j++) {
+                assertEquals(Token.empty, vg.getColumns()[i].getRows()[j]);
             }
         }
     }
@@ -45,10 +45,10 @@ public class VierGewinntTest {
         copy.addToken(1, Token.playerOne);
 
         assertNotEquals(vg.toString(), copy.toString());
-        assertEquals(vg.columnsArrays[0].getRows()[0], copy.columnsArrays[0].getRows()[0]);
-        assertEquals(vg.columnsArrays[0].getRows()[1], copy.columnsArrays[0].getRows()[1]);
+        assertEquals(vg.getColumns()[0].getRows()[0], copy.getColumns()[0].getRows()[0]);
+        assertEquals(vg.getColumns()[0].getRows()[1], copy.getColumns()[0].getRows()[1]);
 
-        assertNotEquals(vg.columnsArrays[0].getRows()[2], copy.columnsArrays[0].getRows()[2]);
+        assertNotEquals(vg.getColumns()[0].getRows()[2], copy.getColumns()[0].getRows()[2]);
     }
 
     @Test
@@ -63,8 +63,8 @@ public class VierGewinntTest {
         vg.addToken(1, Token.playerTwo);
 
         //Check if Token is added
-        assertEquals(Token.playerOne, vg.columnsArrays[0].getRows()[0]);
-        assertEquals(Token.playerTwo, vg.columnsArrays[0].getRows()[1]);
+        assertEquals(Token.playerOne, vg.getColumns()[0].getRows()[0]);
+        assertEquals(Token.playerTwo, vg.getColumns()[0].getRows()[1]);
     }
 
     @Test

@@ -10,7 +10,7 @@ public class MediumBot implements Bot {
     }
     public int makeMove(VierGewinnt vg) {
         // Check if there is a column where the bot can win
-        for (int i = 1; i <= vg.getColumnsArrays(); i++) {
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
                 tmpVg.addToken(i, myToken);
@@ -22,7 +22,7 @@ public class MediumBot implements Bot {
         }
 
         // Check if there is a column where the player can win
-        for (int i = 1; i <= vg.getColumnsArrays(); i++) {
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
                 tmpVg.addToken(i, myToken.other());
@@ -36,7 +36,7 @@ public class MediumBot implements Bot {
         // If there is no column where the bot or the player can win, choose a random column
         int column;
         do {
-            column = (int) (Math.random() * vg.getColumnsArrays()) + 1;
+            column = (int) (Math.random() * vg.getNumberOfColumns()) + 1;
         } while (vg.columnIsFull(column));
 
         vg.addToken(column, myToken);

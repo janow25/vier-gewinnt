@@ -11,7 +11,7 @@ public class RandomBot implements Bot {
     public int makeMove(VierGewinnt vg) {
         int column;
         do {
-            column = (int) (Math.random() * vg.getColumnsArrays()) + 1;
+            column = (int) (Math.random() * vg.getNumberOfColumns()) + 1;
         } while (vg.columnIsFull(column));
 
         vg.addToken(column, myToken);
