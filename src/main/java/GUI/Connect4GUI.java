@@ -12,7 +12,7 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
     private final int panelWidth = 1300;
     private final int panelHeight = 1000;
     private int playingRows = 6;
-    private int playingColumns = 8;
+    private int playingColumns = 7;
     private int tokenWidth = panelWidth / (1 + playingColumns + 1);
     private int tokenHeight = panelHeight / (1 + playingRows + 1);
     private boolean playerWon = false;

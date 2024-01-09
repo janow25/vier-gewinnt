@@ -13,12 +13,14 @@ public class MyPanel extends JPanel {
      }
 
      public void drawBoard(Graphics g) {
+         int rowsIterations = Connect4GUI.getInstance().getPlayingRows();
+         int columnIterations = Connect4GUI.getInstance().getPlayingColumns();
          ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
          Graphics2D g2d = (Graphics2D) g;
          for (int i = tW; i <= Connect4GUI.getInstance().getPanelWidth() - tW; i += tW) {
              g2d.setColor(Color.BLACK);
              g2d.drawLine(i, tH, i, tH * (Connect4GUI.getInstance().getPlayingRows() + 1));
-             if(i < Connect4GUI.getInstance().getPanelWidth() - 2 * tW) {
+             if(i <= Connect4GUI.getInstance().getPanelWidth() - 2 * tW) {
                  for (int j = tH; j <= Connect4GUI.getInstance().getPanelHeight() - 2 * tH; j += tH) {
                      g2d.setColor(Color.BLACK);
                      g2d.drawOval(i + 2, j, tW - 4, tH - 2);
