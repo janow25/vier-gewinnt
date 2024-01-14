@@ -6,7 +6,7 @@ import java.awt.*;
 public class MyPanel extends JPanel {
     private int tH = Connect4GUI.getInstance().getTokenHeight();
     private int tW = Connect4GUI.getInstance().getTokenWidth();
-    private int tokenPadding = Connect4GUI.getInstance().getTokenPadding();
+    private final int tokenPadding = 1;
 
      public void paintComponent(Graphics g) {
         super.paintComponent(g);

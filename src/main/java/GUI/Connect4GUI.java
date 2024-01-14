@@ -17,12 +17,12 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private int playingColumns = 7;
     private int tokenWidth = panelWidth / (1 + playingColumns + 1);
     private int tokenHeight = panelHeight / (1 + playingRows + 1);
-    private final int tokenPadding = 1;
     private boolean playerWon = false;
     private final Color[][] board = new Color[playingRows][playingColumns];
     private final Color player1 = Color.RED;
     private final Color player2 = Color.YELLOW;
     private boolean playersTurn = false;
+    private boolean turnFinished = true;
 
     //Singleton
     public static Connect4GUI getInstance() {
@@ -43,6 +43,9 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         createPointDisplay();
 
         createMenuBar();
+
+        Timer timer = new Timer(10,this);
+        timer.start();
 
         frame.pack();
         frame.setVisible(true);
@@ -101,19 +104,25 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     }
 
     public void dropToken(MouseEvent e) {
-        System.out.println("Mouse was clicked in the plalyingfield");
-        if(e.getY()/tokenHeight != playingRows && e.getX()/tokenWidth != playingColumns) {
-            //if (board[0][e.getX() / tokenWidth] != null) return;
+        //Checks if index out of Bounds
+        if(e.getY()/tokenHeight >= playingRows && e.getX()/tokenWidth >= playingColumns) return;
+
+        //Checks if the top most Token in a specific column is already taken/not null. If true then the column is full -> return
+        if (board[0][e.getX()/tokenWidth] != null) {
+            setTurnFinished(true);
+            return;
         }
 
-
-        System.out.println("Maus X: " + e.getX());
-        System.out.println("Maus Y: " + e.getY());
-        System.out.println("Maus x / tH: " + e.getX()/tokenWidth);
-        System.out.println("Maus y / tW: " + e.getY()/tokenHeight);
-
-        setTokenColor(e.getY()/tokenHeight, e.getX()/tokenWidth, getPlayerColor(playersTurn));
-        panel.repaint();
+        new Thread(() -> {
+            DroppedToken dT = new DroppedToken(0, e.getX()/tokenWidth, getPlayerColor(playersTurn));
+            for (; dT.getRow() < playingRows && board[dT.getRow()][dT.getColumn()] == null; dT.setRow(dT.getRow() + 1)) {
+                try { Thread.sleep(70); } catch(Exception ignored) {}
+                setTokenColor(dT.getRow() - 1,dT.getColumn(), null);
+                setTokenColor(dT.getRow(),dT.getColumn(), dT.getColor());
+            }
+            nextPlayer(playersTurn);
+            setTurnFinished(true);
+        }).start();
     }
 
     @Override
@@ -123,13 +132,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        dropToken(e);
-        //System.out.println("PA X: " + playingArea.getX());
-        //System.out.println("PA Y: " + playingArea.getY());
-        //System.out.println("PA Breite: " + playingArea.getWidth());
-        //System.out.println("PA Höhe: " + playingArea.getHeight());
-        //System.out.println("Maus X: " + e.getX());
-        //System.out.println("Maus Y: " + e.getY());
+        if (turnFinished) {
+            setTurnFinished(false);
+            dropToken(e);
+        }
     }
 
     @Override
@@ -194,10 +200,6 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         this.tokenHeight = this.panelHeight / (1 + playingRows + 1);
     }
 
-    public int getTokenPadding() {
-        return tokenPadding;
-    }
-
     public boolean hasPlayerWon() {
         return playerWon;
     }
@@ -210,8 +212,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         return playersTurn;
     }
 
-    public void setPlayersTurn(boolean playersTurn) {
-        this.playersTurn = playersTurn;
+    public void nextPlayer(boolean playersTurn) {
+        this.playersTurn = !playersTurn;
     }
 
     public Color[][] getBoard() {
@@ -220,14 +222,16 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public Color getTokenColor(int row, int column) {
         if (board[row/tokenHeight - 1][column/tokenWidth - 1] == null) {
-            return Color.white;
+            return Color.WHITE;
         } else {
             return board[row/tokenHeight - 1][column/tokenWidth - 1];
         }
     }
 
     public void setTokenColor(int row, int column, Color color) {
-        board[row][column] = color;
+        if (row >= 0 && column >= 0) {
+            board[row][column] = color;
+        }
     }
 
     public Color getPlayerColor(boolean playersTurn) {
@@ -235,5 +239,9 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             return player1;
         }
         return player2;
+    }
+
+    public void setTurnFinished(boolean turnFinished) {
+        this.turnFinished = turnFinished;
     }
 }
