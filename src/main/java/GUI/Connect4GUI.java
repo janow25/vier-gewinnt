@@ -114,11 +114,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         }
 
         new Thread(() -> {
-            DroppedToken dT = new DroppedToken(0, e.getX()/tokenWidth, getPlayerColor(playersTurn));
-            for (; dT.getRow() < playingRows && board[dT.getRow()][dT.getColumn()] == null; dT.setRow(dT.getRow() + 1)) {
-                try { Thread.sleep(70); } catch(Exception ignored) {}
-                setTokenColor(dT.getRow() - 1,dT.getColumn(), null);
-                setTokenColor(dT.getRow(),dT.getColumn(), dT.getColor());
+            for (int i = 0; i < playingRows && board[i][e.getX()/tokenWidth] == null; i++) {
+                try { Thread.sleep(60); } catch(Exception ignored) {}
+                setTokenColor(i - 1,e.getX()/tokenWidth, null);
+                setTokenColor(i,e.getX()/tokenWidth, getPlayerColor(playersTurn));
             }
             nextPlayer(playersTurn);
             setTurnFinished(true);
@@ -220,6 +219,12 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         return board;
     }
 
+    /**
+     * Should only be used from the drawBoard() Method in MyPanel Class
+     * @param row Y Coordinate of the Mouse
+     * @param column X Coordinate of the Mouse
+     * @return the Color of the Token at the row and column where the Mouse was clicked
+     */
     public Color getTokenColor(int row, int column) {
         if (board[row/tokenHeight - 1][column/tokenWidth - 1] == null) {
             return Color.WHITE;
