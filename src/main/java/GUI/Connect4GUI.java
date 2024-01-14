@@ -1,21 +1,28 @@
 package GUI;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Connect4GUI implements ActionListener, MouseListener, MouseMotionListener {
+public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private static Connect4GUI instance;
 
     private MyFrame frame;
     private MyPanel panel;
+    private JPanel playingArea;
     private final int panelWidth = 1300;
     private final int panelHeight = 1000;
     private int playingRows = 6;
     private int playingColumns = 7;
     private int tokenWidth = panelWidth / (1 + playingColumns + 1);
     private int tokenHeight = panelHeight / (1 + playingRows + 1);
+    private final int tokenPadding = 1;
     private boolean playerWon = false;
+    private final Color[][] board = new Color[playingRows][playingColumns];
+    private final Color player1 = Color.RED;
+    private final Color player2 = Color.YELLOW;
+    private boolean playersTurn = false;
 
     //Singleton
     public static Connect4GUI getInstance() {
@@ -24,6 +31,8 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
         }
         return instance;
     }
+
+    private Connect4GUI() {}
 
     public void createGUI() {
         frame = new MyFrame();
@@ -40,10 +49,17 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
     }
 
     public void createPlayingField() {
-        panel.setPreferredSize(new Dimension(getPanelWidth(), getPanelHeight()));
-        panel.setLayout(new BorderLayout());
+        panel.setPreferredSize(new Dimension(panelWidth, panelHeight));
+        panel.setLayout(null);
 
-        frame.add(panel, BorderLayout.CENTER);
+        playingArea = new JPanel();
+        playingArea.setBounds(tokenWidth, tokenHeight, tokenWidth * playingColumns, tokenHeight * playingRows);
+        playingArea.setOpaque(false);
+        playingArea.addMouseListener(this);
+
+        panel.add(playingArea);
+        panel.revalidate();
+        frame.add(panel);
     }
 
     public void createPointDisplay() {
@@ -84,13 +100,37 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
         menuBar.add(menu3);
     }
 
+    public void dropToken(MouseEvent e) {
+        System.out.println("Mouse was clicked in the plalyingfield");
+        if(e.getY()/tokenHeight != playingRows && e.getX()/tokenWidth != playingColumns) {
+            //if (board[0][e.getX() / tokenWidth] != null) return;
+        }
+
+
+        System.out.println("Maus X: " + e.getX());
+        System.out.println("Maus Y: " + e.getY());
+        System.out.println("Maus x / tH: " + e.getX()/tokenWidth);
+        System.out.println("Maus y / tW: " + e.getY()/tokenHeight);
+
+        setTokenColor(e.getY()/tokenHeight, e.getX()/tokenWidth, getPlayerColor(playersTurn));
+        panel.repaint();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         panel.repaint();
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        dropToken(e);
+        //System.out.println("PA X: " + playingArea.getX());
+        //System.out.println("PA Y: " + playingArea.getY());
+        //System.out.println("PA Breite: " + playingArea.getWidth());
+        //System.out.println("PA Höhe: " + playingArea.getHeight());
+        //System.out.println("Maus X: " + e.getX());
+        //System.out.println("Maus Y: " + e.getY());
+    }
 
     @Override
     public void mousePressed(MouseEvent e) {}
@@ -99,7 +139,9 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
     public void mouseReleased(MouseEvent e) {}
 
     @Override
-    public void mouseEntered(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {
+        playingArea.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
 
     @Override
     public void mouseExited(MouseEvent e) {}
@@ -152,11 +194,46 @@ public class Connect4GUI implements ActionListener, MouseListener, MouseMotionLi
         this.tokenHeight = this.panelHeight / (1 + playingRows + 1);
     }
 
+    public int getTokenPadding() {
+        return tokenPadding;
+    }
+
     public boolean hasPlayerWon() {
         return playerWon;
     }
 
     public void setPlayerWon(boolean playerWon) {
         this.playerWon = playerWon;
+    }
+
+    public boolean isPlayersTurn() {
+        return playersTurn;
+    }
+
+    public void setPlayersTurn(boolean playersTurn) {
+        this.playersTurn = playersTurn;
+    }
+
+    public Color[][] getBoard() {
+        return board;
+    }
+
+    public Color getTokenColor(int row, int column) {
+        if (board[row/tokenHeight - 1][column/tokenWidth - 1] == null) {
+            return Color.white;
+        } else {
+            return board[row/tokenHeight - 1][column/tokenWidth - 1];
+        }
+    }
+
+    public void setTokenColor(int row, int column, Color color) {
+        board[row][column] = color;
+    }
+
+    public Color getPlayerColor(boolean playersTurn) {
+        if(playersTurn){
+            return player1;
+        }
+        return player2;
     }
 }
