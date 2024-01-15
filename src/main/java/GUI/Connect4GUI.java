@@ -11,17 +11,17 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private MyFrame frame;
     private MyPanel panel;
     private JPanel playingArea;
-    private final int panelWidth = 1300;
-    private final int panelHeight = 1000;
     private int playingRows = 6;
     private int playingColumns = 7;
-    private int tokenWidth = panelWidth / (1 + playingColumns + 1);
-    private int tokenHeight = panelHeight / (1 + playingRows + 1);
-    private boolean playerWon = false;
     private final Color[][] board = new Color[playingRows][playingColumns];
+
+    //:TODO change simple variables to Player objects
     private final Color player1 = Color.RED;
     private final Color player2 = Color.YELLOW;
+
+
     private boolean playersTurn = false;
+    private boolean playerWon = false;
     private boolean turnFinished = true;
 
     //Singleton
@@ -51,21 +51,27 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         frame.setVisible(true);
     }
 
-    public void createPlayingField() {
-        panel.setPreferredSize(new Dimension(panelWidth, panelHeight));
+    private void createPlayingField() {
+        panel.setPreferredSize(CalculationFactory.calculatePanelDimension());
         panel.setLayout(null);
 
         playingArea = new JPanel();
-        playingArea.setBounds(tokenWidth, tokenHeight, tokenWidth * playingColumns, tokenHeight * playingRows);
+        playingArea.setBounds(
+                CalculationFactory.calculateTokenWidth(playingColumns),
+                CalculationFactory.calculateTokenHeight(playingRows),
+                CalculationFactory.calculateTokenWidth(playingColumns) * playingColumns,
+                CalculationFactory.calculateTokenHeight(playingRows) * playingRows);
         playingArea.setOpaque(false);
         playingArea.addMouseListener(this);
+        playingArea.addMouseMotionListener(this);
 
         panel.add(playingArea);
         panel.revalidate();
         frame.add(panel);
     }
 
-    public void createPointDisplay() {
+    //:TODO change it so the point display uses the Player classes instead of Strings and numbers
+    private void createPointDisplay() {
         JPanel points = new JPanel();
         points.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
         points.setLayout(new BoxLayout(points, BoxLayout.LINE_AXIS));
@@ -87,7 +93,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         points.add(Box.createGlue());
     }
 
-    public void createMenuBar() {
+    //:TODO add further Menu elements and give them functionalities
+    private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         frame.add(menuBar, BorderLayout.NORTH);
 
@@ -103,9 +110,11 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         menuBar.add(menu3);
     }
 
-    public void dropToken(MouseEvent e) {
+    private void dropToken(MouseEvent e) {
+        int tokenWidth = CalculationFactory.calculateTokenWidth(playingColumns);
+
         //Checks if index out of Bounds
-        if(e.getY()/tokenHeight >= playingRows && e.getX()/tokenWidth >= playingColumns) return;
+        if(e.getY()/CalculationFactory.calculateTokenHeight(playingRows) >= playingRows && e.getX()/tokenWidth >= playingColumns) return;
 
         //Checks if the top most Token in a specific column is already taken/not null. If true then the column is full -> return
         if (board[0][e.getX()/tokenWidth] != null) {
@@ -155,14 +164,12 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     public void mouseDragged(MouseEvent e) {}
 
     @Override
-    public void mouseMoved(MouseEvent e) {}
-
-    public int getPanelWidth() {
-        return panelWidth;
+    public void mouseMoved(MouseEvent e) {
+        hoverToken(e);
     }
 
-    public int getPanelHeight() {
-        return panelHeight;
+    private void hoverToken(MouseEvent e) {
+        //:TODO create the method so a visible Token in the correct Player color hovers over a column where the mouse currently is
     }
 
     public int getPlayingRows() {
@@ -171,7 +178,6 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public void setPlayingRows(int playingRows) {
         this.playingRows = playingRows;
-        setTokenHeight(this.playingRows);
     }
 
     public int getPlayingColumns() {
@@ -180,23 +186,6 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public void setPlayingColumns(int playingColumns) {
         this.playingColumns = playingColumns;
-        setTokenWidth(this.playingColumns);
-    }
-
-    public int getTokenWidth() {
-        return tokenWidth;
-    }
-
-    private void setTokenWidth(int playingColumns) {
-        this.tokenWidth = this.panelWidth / (1 + playingColumns + 1);
-    }
-
-    public int getTokenHeight() {
-        return tokenHeight;
-    }
-
-    private void setTokenHeight(int playingRows) {
-        this.tokenHeight = this.panelHeight / (1 + playingRows + 1);
     }
 
     public boolean hasPlayerWon() {
@@ -226,10 +215,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
      * @return the Color of the Token at the row and column where the Mouse was clicked
      */
     public Color getTokenColor(int row, int column) {
-        if (board[row/tokenHeight - 1][column/tokenWidth - 1] == null) {
+        if (board[row/CalculationFactory.calculateTokenHeight(playingRows) - 1][column/CalculationFactory.calculateTokenWidth(playingColumns) - 1] == null) {
             return Color.WHITE;
         } else {
-            return board[row/tokenHeight - 1][column/tokenWidth - 1];
+            return board[row/CalculationFactory.calculateTokenHeight(playingRows) - 1][column/CalculationFactory.calculateTokenWidth(playingColumns) - 1];
         }
     }
 
@@ -239,6 +228,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         }
     }
 
+    //:TODO make it so the method returns the color of the instance of the right Player(class) instance
     public Color getPlayerColor(boolean playersTurn) {
         if(playersTurn){
             return player1;
