@@ -1,5 +1,7 @@
 package GUI;
 
+import GUI.Factories.CalculationFactory;
+
 import javax.swing.*;
 import java.awt.*;
 

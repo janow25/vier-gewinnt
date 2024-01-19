@@ -1,10 +1,10 @@
-package GUI;
+package GUI.Factories;
 
 import java.awt.*;
 
 public class CalculationFactory {
     public static int calculateScreenWidth() {
-        return Toolkit.getDefaultToolkit().getScreenSize().width - 400;
+        return Toolkit.getDefaultToolkit().getScreenSize().width - 600;
     }
 
     public static int calculateScreenHeight() {

@@ -1,37 +1,32 @@
 package GUI;
 
+import javax.swing.*;
 import java.awt.Color;
 
 public class Player {
-    private static Player instance;
+    private final JLabel NAME;
+    private final Color COLOR;
+    private final JLabel SCORE;
 
-    private String name;
-    private int score;
-    private Color color;
-
-    //Singleton
-    public static Player getInstance() {
-        if(instance == null) {
-            instance = new Player();
-        }
-        return instance;
+    Player(String name, Color color) {
+        this.NAME = new JLabel(name);
+        this.COLOR = color;
+        this.SCORE = new JLabel(String.valueOf(0));
     }
 
-    public void createPlayer(String name, int score, Color color) {
-        this.name = name;
-        this.score = score;
-        this.color = color;
+    public JLabel getNAME() {
+        return NAME;
     }
 
-    public String getName() {
-        return name;
+    public JLabel getSCORE() {
+        return SCORE;
     }
 
-    public int getScore() {
-        return score;
+    public void setSCORE(int SCORE) {
+        this.SCORE.setText(Integer.toString(SCORE));
     }
 
-    public Color getColor() {
-        return color;
+    public Color getCOLOR() {
+        return COLOR;
     }
 }

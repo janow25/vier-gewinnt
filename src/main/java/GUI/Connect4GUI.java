@@ -1,9 +1,13 @@
 package GUI;
 
+import GUI.Factories.CalculationFactory;
+import GUI.Factories.MenuFactory;
+
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private static Connect4GUI instance;
@@ -11,16 +15,13 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private MyFrame frame;
     private MyPanel panel;
     private JPanel playingArea;
+    private final int DEFAULTROWS = 6;
+    private final int DEFAULTCOLUMNS = 7;
     private int playingRows = 6;
     private int playingColumns = 7;
-    private final Color[][] board = new Color[playingRows][playingColumns];
-
-    //:TODO change simple variables to Player objects
-    private final Color player1 = Color.RED;
-    private final Color player2 = Color.YELLOW;
-
-
-    private boolean playersTurn = false;
+    private Color[][] board = new Color[playingRows][playingColumns];
+    private final java.util.List<Player> PLAYERS = new ArrayList<>();
+    private boolean playersTurn = true;
     private boolean playerWon = false;
     private boolean turnFinished = true;
 
@@ -39,6 +40,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         panel = new MyPanel();
 
         createPlayingField();
+
+        createPlayers();
 
         createPointDisplay();
 
@@ -70,7 +73,13 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         frame.add(panel);
     }
 
-    //:TODO change it so the point display uses the Player classes instead of Strings and numbers
+    private void createPlayers() {
+        Player player1 = new Player("Robin", Color.RED);
+        Player player2 = new Player("Philipp", Color.YELLOW);
+        PLAYERS.add(player1);
+        PLAYERS.add(player2);
+    }
+
     private void createPointDisplay() {
         JPanel points = new JPanel();
         points.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
@@ -78,17 +87,32 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         points.setAlignmentX(Component.CENTER_ALIGNMENT);
         frame.add(points, BorderLayout.SOUTH);
 
+        try {
+            PLAYERS.get(0);
+            PLAYERS.get(1);
+        } catch (Exception ignored) {
+            createPlayers();
+        }
+
         points.add(Box.createGlue());
 
-        JLabel player = new JLabel("Player: 0");
-        player.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        points.add(player);
+        PLAYERS.get(0).getNAME().setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        points.add(PLAYERS.get(0).getNAME());
+
+        points.add(Box.createRigidArea(new Dimension(5,0)));
+
+        PLAYERS.get(0).getSCORE().setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        points.add(PLAYERS.get(0).getSCORE());
 
         points.add(Box.createRigidArea(new Dimension(20,0)));
 
-        JLabel cpu = new JLabel("CPU: 0");
-        cpu.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        points.add(cpu);
+        PLAYERS.get(1).getNAME().setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        points.add(PLAYERS.get(1).getNAME());
+
+        points.add(Box.createRigidArea(new Dimension(5,0)));
+
+        PLAYERS.get(1).getSCORE().setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        points.add(PLAYERS.get(1).getSCORE());
 
         points.add(Box.createGlue());
     }
@@ -98,9 +122,13 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         JMenuBar menuBar = new JMenuBar();
         frame.add(menuBar, BorderLayout.NORTH);
 
-        JMenu menu1 = new JMenu("Bearbeiten");
-        JMenuItem item1 = new JMenuItem("Name");
-        menu1.add(item1);
+        JMenu menu1 = new JMenu("Spielfeld bearbeiten");
+        JMenuItem rows = new JMenuItem("Zeilen");
+        JMenuItem columns = new JMenuItem("Spalten");
+        rows.addActionListener(e -> MenuFactory.changePlayingRows());
+        columns.addActionListener(e -> MenuFactory.changePlayingColumns());
+        menu1.add(rows);
+        menu1.add(columns);
 
         JMenu menu2 = new JMenu("Profil");
         JMenu menu3 = new JMenu("Hilfe");
@@ -122,6 +150,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             return;
         }
 
+        //Animation
         new Thread(() -> {
             for (int i = 0; i < playingRows && board[i][e.getX()/tokenWidth] == null; i++) {
                 try { Thread.sleep(60); } catch(Exception ignored) {}
@@ -204,6 +233,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         this.playersTurn = !playersTurn;
     }
 
+    public void setBoard(int playingRows, int playingColumns) {
+        board = new Color[playingRows][playingColumns];
+    }
+
     public Color[][] getBoard() {
         return board;
     }
@@ -228,15 +261,26 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         }
     }
 
-    //:TODO make it so the method returns the color of the instance of the right Player(class) instance
     public Color getPlayerColor(boolean playersTurn) {
         if(playersTurn){
-            return player1;
+            return PLAYERS.get(0).getCOLOR();
         }
-        return player2;
+        return PLAYERS.get(1).getCOLOR();
     }
 
     public void setTurnFinished(boolean turnFinished) {
         this.turnFinished = turnFinished;
+    }
+
+    public MyFrame getFrame() {
+        return frame;
+    }
+
+    public int getDEFAULTROWS() {
+        return DEFAULTROWS;
+    }
+
+    public int getDEFAULTCOLUMNS() {
+        return DEFAULTCOLUMNS;
     }
 }
