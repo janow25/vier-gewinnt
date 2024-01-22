@@ -160,7 +160,9 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         new Thread(() -> {
 
             // Set Token in Backend
-            viergewinnt.addToken(e.getX()/tokenWidth);
+            viergewinnt.addToken(e.getX()/tokenWidth + 1);
+
+            System.out.println(viergewinnt);
 
             for (int i = 0; i < playingRows && board[i][e.getX()/tokenWidth] == null; i++) {
                 try { Thread.sleep(60); } catch(Exception ignored) {}
@@ -174,6 +176,17 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
                 // ToDo: Add Win-Screen
                 System.out.println(viergewinnt.getGameStatus() + " wins!");
+
+                if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
+                    PLAYERS.get(0).setSCORE(1);
+                } else {
+                    PLAYERS.get(1).setSCORE(1);
+                }
+
+                // Reset the game
+                viergewinnt = new VierGewinnt(playingColumns, playingRows);
+                setBoard(playingRows, playingColumns);
+                nextPlayer(false);
             }
         }).start();
     }
