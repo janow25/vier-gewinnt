@@ -8,32 +8,26 @@ public enum Token {
     playerTwo;
 
     public GameStatus toGameStatus() {
-        if (this == Token.playerOne) {
-            return GameStatus.playerOneWon;
-        } else if (this == Token.playerTwo) {
-            return GameStatus.playerTwoWon;
-        } else {
-            return GameStatus.onGoing;
-        }
+        return switch (this) {
+            case playerOne -> GameStatus.playerOneWon;
+            case playerTwo -> GameStatus.playerTwoWon;
+            default -> GameStatus.onGoing;
+        };
     }
 
     public Token other() {
-        if (this == Token.playerOne) {
-            return Token.playerTwo;
-        } else if (this == Token.playerTwo) {
-            return Token.playerOne;
-        } else {
-            return Token.empty;
-        }
+        return switch (this) {
+            case playerOne -> Token.playerTwo;
+            case playerTwo -> Token.playerOne;
+            default -> Token.empty;
+        };
     }
 
     public Color toColor() {
-        if (this == Token.playerOne) {
-            return Color.red;
-        } else if (this == Token.playerTwo) {
-            return Color.yellow;
-        } else {
-            return null;
-        }
+        return switch (this) {
+            case playerOne -> Color.red;
+            case playerTwo -> Color.yellow;
+            default -> null;
+        };
     }
 }
