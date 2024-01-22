@@ -89,21 +89,16 @@ public class MenuCreationFactory {
         JButton confirm = new JButton("Bestätigen");
         confirm.setPreferredSize(new Dimension(150,30));
         confirm.addActionListener(e -> {
-            //:TODO Default doesnt work
             if (selectedRowOption.getText().equals("Ausgewählt: default") && selectedColumnOption.getText().equals("Ausgewählt: default")) {
-                System.out.println("Both");
                 Connect4GUI.getInstance().setPlayingRows(Connect4GUI.getInstance().getDEFAULTROWS());
                 Connect4GUI.getInstance().setPlayingColumns(Connect4GUI.getInstance().getDEFAULTCOLUMNS());
             } else if (selectedRowOption.getText().equals("Ausgewählt: default")) {
-                System.out.println("DefaultRows");
                 Connect4GUI.getInstance().setPlayingRows(Connect4GUI.getInstance().getDEFAULTROWS());
                 Connect4GUI.getInstance().setPlayingColumns(Integer.parseInt(removeLetters(selectedColumnOption.getText())));
             } else if (selectedColumnOption.getText().equals("Ausgewählt: default")) {
-                System.out.println("DefaultColumns");
                 Connect4GUI.getInstance().setPlayingRows(Integer.parseInt(removeLetters(selectedRowOption.getText())));
                 Connect4GUI.getInstance().setPlayingColumns(Connect4GUI.getInstance().getDEFAULTCOLUMNS());
             } else {
-                System.out.println("Else");
                 Connect4GUI.getInstance().setPlayingRows(Integer.parseInt(removeLetters(selectedRowOption.getText())));
                 Connect4GUI.getInstance().setPlayingColumns(Integer.parseInt(removeLetters(selectedColumnOption.getText())));
             }
