@@ -3,6 +3,7 @@ package GUI;
 import GUI.Factories.CalculationFactory;
 import GUI.Factories.MenuFactory;
 
+import backend.Difficulty;
 import backend.GameStatus;
 import backend.Token;
 import backend.VierGewinnt;
@@ -25,7 +26,6 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private int playingColumns = 7;
     private Color[][] board = new Color[playingRows][playingColumns];
     private final java.util.List<Player> PLAYERS = new ArrayList<>();
-    private boolean playersTurn = true;
     private boolean playerWon = false;
     private boolean turnFinished = true;
 
@@ -40,10 +40,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private Connect4GUI() {}
 
     public void createGUI() {
+        loadGame();
+
         frame = new MyFrame();
         panel = new MyPanel();
-
-        viergewinnt = new VierGewinnt(playingColumns, playingRows);
 
         createPlayingField();
 
@@ -58,6 +58,21 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public void loadGame() {
+        viergewinnt = VierGewinnt.load();
+
+        if (viergewinnt == null) {
+            System.out.println("No Game found...Creating new Game");
+            viergewinnt = new VierGewinnt(playingColumns, playingRows, Difficulty.easy);
+        }
+        else {
+            System.out.println("Game loaded");
+            System.out.println(viergewinnt);
+        }
+
+        syncBoard();
     }
 
     private void createPlayingField() {
@@ -156,20 +171,20 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             return;
         }
 
+        int index = e.getX()/tokenWidth;
+
         //Animation
         new Thread(() -> {
-
             // Set Token in Backend
-            viergewinnt.addToken(e.getX()/tokenWidth + 1);
+            viergewinnt.addToken(index + 1);
 
             System.out.println(viergewinnt);
 
-            for (int i = 0; i < playingRows && board[i][e.getX()/tokenWidth] == null; i++) {
+            for (int i = 0; i < playingRows && board[i][index] == null; i++) {
                 try { Thread.sleep(60); } catch(Exception ignored) {}
-                setTokenColor(i - 1,e.getX()/tokenWidth, null);
-                setTokenColor(i,e.getX()/tokenWidth, getPlayerColor(playersTurn));
+                setTokenColor(i - 1, index, null);
+                setTokenColor(i, index, getPlayerColor());
             }
-            nextPlayer(playersTurn);
             setTurnFinished(true);
 
             // Check if the player has won
@@ -186,8 +201,48 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
                 // Reset the game
                 viergewinnt = new VierGewinnt(playingColumns, playingRows);
                 setBoard(playingRows, playingColumns);
-                nextPlayer(false);
             }
+
+            if (viergewinnt.isBotTurn()) {
+                botDropToken(viergewinnt.getBot().makeMove(viergewinnt) - 1);
+                viergewinnt.save();
+            }
+            else {
+                syncBoard();
+            }
+        }).start();
+    }
+
+    private void botDropToken(int index) {
+        //Animation
+        new Thread(() -> {
+            // Set Token in Backend
+            System.out.println(viergewinnt);
+
+            for (int i = 0; i < playingRows && board[i][index] == null; i++) {
+                try { Thread.sleep(60); } catch(Exception ignored) {}
+                setTokenColor(i - 1, index, null);
+                setTokenColor(i, index, getPlayerColor());
+            }
+            setTurnFinished(true);
+
+            // Check if the player has won
+            if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
+                // ToDo: Add Win-Screen
+                System.out.println(viergewinnt.getGameStatus() + " wins!");
+
+                if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
+                    PLAYERS.get(0).setSCORE(1);
+                } else {
+                    PLAYERS.get(1).setSCORE(1);
+                }
+
+                // Reset the game
+                viergewinnt = new VierGewinnt(playingColumns, playingRows);
+                setBoard(playingRows, playingColumns);
+            }
+
+            syncBoard();
         }).start();
     }
 
@@ -254,16 +309,21 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         this.playerWon = playerWon;
     }
 
-    public boolean isPlayersTurn() {
-        return playersTurn;
-    }
-
-    public void nextPlayer(boolean playersTurn) {
-        this.playersTurn = !playersTurn;
-    }
-
     public void setBoard(int playingRows, int playingColumns) {
         board = new Color[playingRows][playingColumns];
+    }
+
+    public void syncBoard() {
+        setPlayingColumns(viergewinnt.getNumberOfColumns());
+        setPlayingRows(viergewinnt.getNumberOfRows());
+
+        setBoard(playingRows, playingColumns);
+
+        for (int i = 0; i < playingRows; i++) {
+            for (int j = 0; j < playingColumns; j++) {
+                board[i][j] = viergewinnt.getColor(j, playingRows-i-1);
+            }
+        }
     }
 
     public Color[][] getBoard() {
@@ -277,10 +337,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
      * @return the Color of the backend.Token at the row and column where the Mouse was clicked
      */
     public Color getTokenColor(int row, int column) {
-        if (board[row/CalculationFactory.calculateTokenHeight(playingRows) - 1][column/CalculationFactory.calculateTokenWidth(playingColumns) - 1] == null) {
+        if (board[row][column] == null) {
             return Color.WHITE;
         } else {
-            return board[row/CalculationFactory.calculateTokenHeight(playingRows) - 1][column/CalculationFactory.calculateTokenWidth(playingColumns) - 1];
+            return board[row][column];
         }
     }
 
@@ -290,11 +350,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         }
     }
 
-    public Color getPlayerColor(boolean playersTurn) {
-        if(playersTurn){
-            return PLAYERS.get(0).getCOLOR();
-        }
-        return PLAYERS.get(1).getCOLOR();
+    public Color getPlayerColor() {
+        return viergewinnt.getCurrentToken().other().toColor();
     }
 
     public void setTurnFinished(boolean turnFinished) {

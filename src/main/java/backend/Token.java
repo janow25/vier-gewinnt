@@ -1,5 +1,7 @@
 package backend;
 
+import java.awt.*;
+
 public enum Token {
     empty,
     playerOne,
@@ -22,6 +24,16 @@ public enum Token {
             return Token.playerOne;
         } else {
             return Token.empty;
+        }
+    }
+
+    public Color toColor() {
+        if (this == Token.playerOne) {
+            return Color.red;
+        } else if (this == Token.playerTwo) {
+            return Color.yellow;
+        } else {
+            return null;
         }
     }
 }

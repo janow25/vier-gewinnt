@@ -1,5 +1,6 @@
 package backend;
 
+import java.awt.*;
 import java.io.*;
 import java.util.Scanner;
 
@@ -31,6 +32,8 @@ public class VierGewinnt implements Serializable {
 
     @Getter
     private GameStatus gameStatus = GameStatus.onGoing;
+
+    private static String saveGamePath = "./savegame.bin";
 
     public VierGewinnt() {
         columns = new Column[5];
@@ -127,6 +130,10 @@ public class VierGewinnt implements Serializable {
         return rounds % 2 == 0 ? Token.playerOne : Token.playerTwo;
     }
 
+    public Boolean isBotTurn() {
+        return getCurrentToken() == botToken && difficulty != Difficulty.noBot;
+    }
+
     private int getPlayerInput(Token token) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Player " + token + " enter column: ");
@@ -142,6 +149,7 @@ public class VierGewinnt implements Serializable {
 
     public void addToken(int column) {
         addToken(column, getCurrentToken());
+        save();
     }
 
     /// This Method adds a new backend.Token to the current backend.Column. The column is not zero based. So if you want to add a backend.Token to the first column you have to pass 1 as the column parameter.
@@ -150,8 +158,6 @@ public class VierGewinnt implements Serializable {
         columns[column-1].addToken(token);
 
         gameStatus = checkForWin();
-
-        save("savegame.txt");
     }
 
     public boolean columnIsFull(int column) {
@@ -247,9 +253,9 @@ public class VierGewinnt implements Serializable {
         return copy;
     }
 
-    public void save(String path) {
+    public void save() {
         try {
-            FileOutputStream fileOut = new FileOutputStream(path);
+            FileOutputStream fileOut = new FileOutputStream(saveGamePath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(this);
             objectOut.close();
@@ -260,9 +266,13 @@ public class VierGewinnt implements Serializable {
         }
     }
 
-    public static VierGewinnt load(String path) {
+    public static VierGewinnt load() {
+        if (!new File(saveGamePath).exists()) {
+            return null;
+        }
+
         try {
-            FileInputStream fi = new FileInputStream(new File(path));
+            FileInputStream fi = new FileInputStream(new File(saveGamePath));
             ObjectInputStream oi = new ObjectInputStream(fi);
 
             // Read objects
@@ -274,5 +284,9 @@ public class VierGewinnt implements Serializable {
         }
 
         return null;
+    }
+
+    public Color getColor(int column, int row) {
+        return columns[column].getRows()[row].toColor();
     }
 }
