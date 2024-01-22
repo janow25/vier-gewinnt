@@ -213,6 +213,16 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         }).start();
     }
 
+    public void createNewBoard(int rows, int columns, Difficulty difficulty) {
+        setPlayingColumns(columns);
+        setPlayingRows(rows);
+
+        viergewinnt = new VierGewinnt(playingColumns, playingRows, difficulty);
+        viergewinnt.save();
+
+        createGUI();
+    }
+
     private void botDropToken(int index) {
         //Animation
         new Thread(() -> {

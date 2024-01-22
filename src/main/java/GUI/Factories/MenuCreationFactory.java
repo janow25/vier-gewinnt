@@ -2,6 +2,7 @@ package GUI.Factories;
 
 import GUI.Connect4GUI;
 import GUI.MyPanel;
+import backend.Difficulty;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,6 +93,8 @@ public class MenuCreationFactory {
             if (selectedRowOption.getText().equals("Ausgewählt: default") && selectedColumnOption.getText().equals("Ausgewählt: default")) {
                 Connect4GUI.getInstance().setPlayingRows(Connect4GUI.getInstance().getDEFAULTROWS());
                 Connect4GUI.getInstance().setPlayingColumns(Connect4GUI.getInstance().getDEFAULTCOLUMNS());
+
+
             } else if (selectedRowOption.getText().equals("Ausgewählt: default")) {
                 Connect4GUI.getInstance().setPlayingRows(Connect4GUI.getInstance().getDEFAULTROWS());
                 Connect4GUI.getInstance().setPlayingColumns(Integer.parseInt(removeLetters(selectedColumnOption.getText())));
@@ -99,11 +102,8 @@ public class MenuCreationFactory {
                 Connect4GUI.getInstance().setPlayingRows(Integer.parseInt(removeLetters(selectedRowOption.getText())));
                 Connect4GUI.getInstance().setPlayingColumns(Connect4GUI.getInstance().getDEFAULTCOLUMNS());
             } else {
-                Connect4GUI.getInstance().setPlayingRows(Integer.parseInt(removeLetters(selectedRowOption.getText())));
-                Connect4GUI.getInstance().setPlayingColumns(Integer.parseInt(removeLetters(selectedColumnOption.getText())));
+                Connect4GUI.getInstance().createNewBoard(Integer.parseInt(removeLetters(selectedRowOption.getText())), Integer.parseInt(removeLetters(selectedColumnOption.getText())), Difficulty.noBot);
             }
-            Connect4GUI.getInstance().setBoard(Connect4GUI.getInstance().getPlayingRows(), Connect4GUI.getInstance().getPlayingColumns());
-            Connect4GUI.getInstance().createGUI();
             editScreen.dispose();
         });
         confirmPanel.add(confirm);
