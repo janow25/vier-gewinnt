@@ -25,7 +25,7 @@ public class MenuCreationFactory {
         topPanel.add(Box.createRigidArea(new Dimension(0,30)));
         editScreen.add(topPanel, BorderLayout.NORTH);
 
-        //Main Panel in the middle
+        //backend.Main Panel in the middle
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
         editScreen.add(mainPanel, BorderLayout.CENTER);

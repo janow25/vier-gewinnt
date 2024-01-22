@@ -1,3 +1,6 @@
+import backend.GameStatus;
+import backend.Token;
+import backend.VierGewinnt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,16 +56,16 @@ public class VierGewinntTest {
 
     @Test
     public void addToken() {
-        // Test Add Token Method
+        // Test Add backend.Token Method
         VierGewinnt vg = new VierGewinnt();
 
-        // Add Token to Column 1
+        // Add backend.Token to backend.Column 1
         vg.addToken(1, Token.playerOne);
 
-        // Add Token to Column 1
+        // Add backend.Token to backend.Column 1
         vg.addToken(1, Token.playerTwo);
 
-        //Check if Token is added
+        //Check if backend.Token is added
         assertEquals(Token.playerOne, vg.getColumns()[0].getRows()[0]);
         assertEquals(Token.playerTwo, vg.getColumns()[0].getRows()[1]);
     }
@@ -106,7 +109,7 @@ public class VierGewinntTest {
         // Test Check for Win Method
         VierGewinnt vg = new VierGewinnt();
 
-        // Check Win in Column
+        // Check Win in backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -144,18 +147,18 @@ public class VierGewinntTest {
         // Check Win in Diagonal
         VierGewinnt vg = new VierGewinnt();
 
-        // First Column
+        // First backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Second Column
+        // Second backend.Column
         vg.addToken(2, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
         vg.addToken(2, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Third Column
+        // Third backend.Column
         vg.addToken(3, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -165,7 +168,7 @@ public class VierGewinntTest {
         vg.addToken(3, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Fourth Column
+        // Fourth backend.Column
         vg.addToken(4, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -181,7 +184,7 @@ public class VierGewinntTest {
         // Check diagonal win in other direction and for playerTwo
         vg = new VierGewinnt();
 
-        // First Column
+        // First backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -194,7 +197,7 @@ public class VierGewinntTest {
         vg.addToken(1, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Second Column
+        // Second backend.Column
         vg.addToken(2, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -204,13 +207,13 @@ public class VierGewinntTest {
         vg.addToken(2, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Third Column
+        // Third backend.Column
         vg.addToken(3, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
         vg.addToken(3, Token.playerTwo);
 
-        // Fourth Column
+        // Fourth backend.Column
         vg.addToken(4, Token.playerTwo);
         assertEquals(GameStatus.playerTwoWon, vg.checkForWin());
     }
@@ -220,7 +223,7 @@ public class VierGewinntTest {
         // Test Check for Win Method
         VierGewinnt vg = new VierGewinnt(10);
 
-        // Check Win in Column
+        // Check Win in backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -258,18 +261,18 @@ public class VierGewinntTest {
         // Check Win in Diagonal
         VierGewinnt vg = new VierGewinnt(10);
 
-        // First Column
+        // First backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Second Column
+        // Second backend.Column
         vg.addToken(2, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
         vg.addToken(2, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Third Column
+        // Third backend.Column
         vg.addToken(3, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -279,7 +282,7 @@ public class VierGewinntTest {
         vg.addToken(3, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Fourth Column
+        // Fourth backend.Column
         vg.addToken(4, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -295,7 +298,7 @@ public class VierGewinntTest {
         // Check diagonal win in other direction and for playerTwo
         vg = new VierGewinnt(10);
 
-        // First Column
+        // First backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -308,7 +311,7 @@ public class VierGewinntTest {
         vg.addToken(1, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Second Column
+        // Second backend.Column
         vg.addToken(2, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -318,13 +321,13 @@ public class VierGewinntTest {
         vg.addToken(2, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Third Column
+        // Third backend.Column
         vg.addToken(3, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
         vg.addToken(3, Token.playerTwo);
 
-        // Fourth Column
+        // Fourth backend.Column
         vg.addToken(4, Token.playerTwo);
         assertEquals(GameStatus.playerTwoWon, vg.checkForWin());
     }
@@ -334,7 +337,7 @@ public class VierGewinntTest {
         // Test Check for Win Method
         VierGewinnt vg = new VierGewinnt(10, 5);
 
-        // Check Win in Column
+        // Check Win in backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -372,18 +375,18 @@ public class VierGewinntTest {
         // Check Win in Diagonal
         VierGewinnt vg = new VierGewinnt(10, 5);
 
-        // First Column
+        // First backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Second Column
+        // Second backend.Column
         vg.addToken(2, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
         vg.addToken(2, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Third Column
+        // Third backend.Column
         vg.addToken(3, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -393,7 +396,7 @@ public class VierGewinntTest {
         vg.addToken(3, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Fourth Column
+        // Fourth backend.Column
         vg.addToken(4, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -409,7 +412,7 @@ public class VierGewinntTest {
         // Check diagonal win in other direction and for playerTwo
         vg = new VierGewinnt(10, 5);
 
-        // First Column
+        // First backend.Column
         vg.addToken(1, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -422,7 +425,7 @@ public class VierGewinntTest {
         vg.addToken(1, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Second Column
+        // Second backend.Column
         vg.addToken(2, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
@@ -432,13 +435,13 @@ public class VierGewinntTest {
         vg.addToken(2, Token.playerTwo);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
-        // Third Column
+        // Third backend.Column
         vg.addToken(3, Token.playerOne);
         assertEquals(GameStatus.onGoing, vg.checkForWin());
 
         vg.addToken(3, Token.playerTwo);
 
-        // Fourth Column
+        // Fourth backend.Column
         vg.addToken(4, Token.playerTwo);
         assertEquals(GameStatus.playerTwoWon, vg.checkForWin());
     }

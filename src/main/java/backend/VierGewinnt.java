@@ -1,5 +1,12 @@
+package backend;
+
 import java.io.*;
 import java.util.Scanner;
+
+import backend.bot.Bot;
+import backend.bot.HardBot;
+import backend.bot.MediumBot;
+import backend.bot.RandomBot;
 import lombok.Getter;
 
 public class VierGewinnt implements Serializable {
@@ -10,18 +17,22 @@ public class VierGewinnt implements Serializable {
     @Getter
     private Column[] columns;
 
+    @Getter
     static Token botToken = Token.playerTwo;
 
     @Getter
     private Bot bot;
 
     @Getter
-    private Difficulty difficulty = Difficulty.noBot;
+    private Difficulty difficulty;
 
     @Getter
     private int rounds = 0;
 
-    VierGewinnt() {
+    @Getter
+    private GameStatus gameStatus = GameStatus.onGoing;
+
+    public VierGewinnt() {
         columns = new Column[5];
 
         for (int i = 0; i < columns.length; i++) {
@@ -33,7 +44,7 @@ public class VierGewinnt implements Serializable {
         bot = null;
     }
 
-    VierGewinnt(int columns) {
+    public VierGewinnt(int columns) {
         this(columns, columns);
 
         difficulty = Difficulty.noBot;
@@ -41,7 +52,7 @@ public class VierGewinnt implements Serializable {
         bot = null;
     }
 
-    VierGewinnt(int columns, int rows) {
+    public VierGewinnt(int columns, int rows) {
         this.columns = new Column[columns];
 
         for (int i = 0; i < this.columns.length; i++) {
@@ -53,7 +64,7 @@ public class VierGewinnt implements Serializable {
         bot = null;
     }
 
-    VierGewinnt(Difficulty difficulty) {
+    public VierGewinnt(Difficulty difficulty) {
         this();
         this.difficulty = difficulty;
 
@@ -65,7 +76,7 @@ public class VierGewinnt implements Serializable {
         }
     }
 
-    VierGewinnt(int columns, Difficulty difficulty) {
+    public VierGewinnt(int columns, Difficulty difficulty) {
         this(columns);
         this.difficulty = difficulty;
 
@@ -77,7 +88,7 @@ public class VierGewinnt implements Serializable {
         }
     }
 
-    VierGewinnt(int columns, int rows, Difficulty difficulty) {
+    public VierGewinnt(int columns, int rows, Difficulty difficulty) {
         this(columns, rows);
         this.difficulty = difficulty;
 
@@ -129,10 +140,16 @@ public class VierGewinnt implements Serializable {
         return column;
     }
 
-    /// This Method adds a new Token to the current Column. The column is not zero based. So if you want to add a Token to the first column you have to pass 1 as the column parameter.
+    public void addToken(int column) {
+        addToken(column, getCurrentToken());
+    }
+
+    /// This Method adds a new backend.Token to the current backend.Column. The column is not zero based. So if you want to add a backend.Token to the first column you have to pass 1 as the column parameter.
     public void addToken(int column, Token token) {
         rounds++;
         columns[column-1].addToken(token);
+
+        gameStatus = checkForWin();
 
         save("savegame.txt");
     }
@@ -142,39 +159,38 @@ public class VierGewinnt implements Serializable {
     }
 
     public GameStatus checkForWin() {
-        GameStatus winner = GameStatus.onGoing;
-
-        if (rounds == getNumberOfColumns() * getNumberOfRows()) {
-            return GameStatus.draw;
-        }
-
         for (int i = 0; i < columns.length; i++) {
             for (int j = 0; j < columns[i].getRows().length; j++) {
                 if (columns[i].getRows()[j] != Token.empty) {
                     if (j < columns[i].getRows().length - 3) {
                         if (columns[i].getRows()[j] == columns[i].getRows()[j + 1] && columns[i].getRows()[j] == columns[i].getRows()[j + 2] && columns[i].getRows()[j] == columns[i].getRows()[j + 3]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+                            return columns[i].getRows()[j].toGameStatus();
                         }
                     }
                     if (i < columns.length - 3) {
                         if (columns[i].getRows()[j] == columns[i + 1].getRows()[j] && columns[i].getRows()[j] == columns[i + 2].getRows()[j] && columns[i].getRows()[j] == columns[i + 3].getRows()[j]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+                            return columns[i].getRows()[j].toGameStatus();
                         }
                     }
                     if (i < columns.length - 3 && j < columns[i].getRows().length - 3) {
                         if (columns[i].getRows()[j] == columns[i + 1].getRows()[j + 1] && columns[i].getRows()[j] == columns[i + 2].getRows()[j + 2] && columns[i].getRows()[j] == columns[i + 3].getRows()[j + 3]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+                            return columns[i].getRows()[j].toGameStatus();
                         }
                     }
                     if (i < columns.length - 3 && j > 2) {
                         if (columns[i].getRows()[j] == columns[i + 1].getRows()[j - 1] && columns[i].getRows()[j] == columns[i + 2].getRows()[j - 2] && columns[i].getRows()[j] == columns[i + 3].getRows()[j - 3]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+                            return columns[i].getRows()[j].toGameStatus();
                         }
                     }
                 }
             }
         }
-        return winner;
+
+        if (rounds == getNumberOfColumns() * getNumberOfRows()) {
+            return GameStatus.draw;
+        }
+
+        return GameStatus.onGoing;
     }
 
     public int getNumberOfRows() {

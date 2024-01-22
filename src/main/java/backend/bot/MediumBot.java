@@ -1,21 +1,25 @@
-public class MediumBot implements Bot {
+package backend.bot;
 
-    private Token myToken;
-    MediumBot() {
-        myToken = Token.playerTwo;
+import backend.Token;
+import backend.VierGewinnt;
+
+public class MediumBot extends BotBase {
+
+    public MediumBot() {
+        super();
     }
 
-    MediumBot(Token token) {
-        myToken = token;
+    public MediumBot(Token token) {
+        super(token);
     }
     public int makeMove(VierGewinnt vg) {
         // Check if there is a column where the bot can win
         for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
-                tmpVg.addToken(i, myToken);
-                if (tmpVg.checkForWin() == myToken.toGameStatus()) {
-                    vg.addToken(i, myToken);
+                tmpVg.addToken(i, super.getMyToken());
+                if (tmpVg.checkForWin() == super.getMyToken().toGameStatus()) {
+                    vg.addToken(i, super.getMyToken());
                     return i;
                 }
             }
@@ -25,9 +29,9 @@ public class MediumBot implements Bot {
         for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
-                tmpVg.addToken(i, myToken.other());
-                if (tmpVg.checkForWin() == myToken.other().toGameStatus()) {
-                    vg.addToken(i, myToken);
+                tmpVg.addToken(i, super.getMyToken().other());
+                if (tmpVg.checkForWin() == super.getMyToken().other().toGameStatus()) {
+                    vg.addToken(i, super.getMyToken());
                     return i;
                 }
             }
@@ -39,7 +43,7 @@ public class MediumBot implements Bot {
             column = (int) (Math.random() * vg.getNumberOfColumns()) + 1;
         } while (vg.columnIsFull(column));
 
-        vg.addToken(column, myToken);
+        vg.addToken(column, super.getMyToken());
 
         return column;
     }

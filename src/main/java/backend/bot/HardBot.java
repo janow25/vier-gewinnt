@@ -1,12 +1,16 @@
-public class HardBot implements Bot {
+package backend.bot;
 
-    private Token myToken;
-    HardBot() {
-        myToken = Token.playerTwo;
+import backend.Token;
+import backend.VierGewinnt;
+
+public class HardBot extends BotBase {
+
+    public HardBot() {
+        super();
     }
 
-    HardBot(Token token) {
-        myToken = token;
+    public HardBot(Token token) {
+        super(token);
     }
 
     public int GetColumnWithFastestWin(VierGewinnt vg, int depth) {
@@ -29,9 +33,9 @@ public class HardBot implements Bot {
 
     public int CheckForFastestWin(VierGewinnt vg, int column, int depth) {
         VierGewinnt tmpVg = vg.copy();
-        tmpVg.addToken(column, myToken);
+        tmpVg.addToken(column, super.getMyToken());
 
-        if (tmpVg.checkForWin() == myToken.toGameStatus()) {
+        if (tmpVg.checkForWin() == super.getMyToken().toGameStatus()) {
             System.out.println(tmpVg);
             System.out.println("Winning move found at depth " + depth + " in column " + column + "!");
             return depth;
@@ -52,9 +56,9 @@ public class HardBot implements Bot {
         for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
-                tmpVg.addToken(i, myToken);
-                if (tmpVg.checkForWin() == myToken.toGameStatus()) {
-                    vg.addToken(i, myToken);
+                tmpVg.addToken(i, super.getMyToken());
+                if (tmpVg.checkForWin() == super.getMyToken().toGameStatus()) {
+                    vg.addToken(i, super.getMyToken());
                     return i;
                 }
             }
@@ -64,9 +68,9 @@ public class HardBot implements Bot {
         for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
                 VierGewinnt tmpVg = vg.copy();
-                tmpVg.addToken(i, myToken.other());
-                if (tmpVg.checkForWin() == myToken.other().toGameStatus()) {
-                    vg.addToken(i, myToken);
+                tmpVg.addToken(i, super.getMyToken().other());
+                if (tmpVg.checkForWin() == super.getMyToken().other().toGameStatus()) {
+                    vg.addToken(i, super.getMyToken());
                     return i;
                 }
             }
@@ -75,7 +79,7 @@ public class HardBot implements Bot {
         // If there is no column where the bot or the player can win, choose the column with the fastest win
         int column = GetColumnWithFastestWin(vg, 5);
 
-        vg.addToken(column, myToken);
+        vg.addToken(column, super.getMyToken());
 
         return column;
     }

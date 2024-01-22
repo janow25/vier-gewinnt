@@ -3,6 +3,10 @@ package GUI;
 import GUI.Factories.CalculationFactory;
 import GUI.Factories.MenuFactory;
 
+import backend.GameStatus;
+import backend.Token;
+import backend.VierGewinnt;
+
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
@@ -11,7 +15,7 @@ import java.util.ArrayList;
 
 public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private static Connect4GUI instance;
-
+    private VierGewinnt viergewinnt;
     private MyFrame frame;
     private MyPanel panel;
     private JPanel playingArea;
@@ -38,6 +42,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     public void createGUI() {
         frame = new MyFrame();
         panel = new MyPanel();
+
+        viergewinnt = new VierGewinnt(playingColumns, playingRows);
 
         createPlayingField();
 
@@ -144,7 +150,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         //Checks if index out of Bounds
         if(e.getY()/CalculationFactory.calculateTokenHeight(playingRows) >= playingRows && e.getX()/tokenWidth >= playingColumns) return;
 
-        //Checks if the top most Token in a specific column is already taken/not null. If true then the column is full -> return
+        //Checks if the top most backend.Token in a specific column is already taken/not null. If true then the column is full -> return
         if (board[0][e.getX()/tokenWidth] != null) {
             setTurnFinished(true);
             return;
@@ -152,6 +158,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
         //Animation
         new Thread(() -> {
+
+            // Set Token in Backend
+            viergewinnt.addToken(e.getX()/tokenWidth);
+
             for (int i = 0; i < playingRows && board[i][e.getX()/tokenWidth] == null; i++) {
                 try { Thread.sleep(60); } catch(Exception ignored) {}
                 setTokenColor(i - 1,e.getX()/tokenWidth, null);
@@ -159,6 +169,12 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             }
             nextPlayer(playersTurn);
             setTurnFinished(true);
+
+            // Check if the player has won
+            if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
+                // ToDo: Add Win-Screen
+                System.out.println(viergewinnt.getGameStatus() + " wins!");
+            }
         }).start();
     }
 
@@ -198,7 +214,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     }
 
     private void hoverToken(MouseEvent e) {
-        //:TODO create the method so a visible Token in the correct Player color hovers over a column where the mouse currently is
+        //:TODO create the method so a visible backend.Token in the correct Player color hovers over a column where the mouse currently is
     }
 
     public int getPlayingRows() {
@@ -245,7 +261,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
      * Should only be used from the drawBoard() Method in MyPanel Class
      * @param row Y Coordinate of the Mouse
      * @param column X Coordinate of the Mouse
-     * @return the Color of the Token at the row and column where the Mouse was clicked
+     * @return the Color of the backend.Token at the row and column where the Mouse was clicked
      */
     public Color getTokenColor(int row, int column) {
         if (board[row/CalculationFactory.calculateTokenHeight(playingRows) - 1][column/CalculationFactory.calculateTokenWidth(playingColumns) - 1] == null) {
