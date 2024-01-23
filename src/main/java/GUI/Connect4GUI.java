@@ -40,6 +40,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     Connect4GUI() {}
 
     public void createGUI() {
+        //:Todo Let the Player decide if he wants to load the last game or create a new one
         loadGame();
 
         frame = new MyFrame();
@@ -64,12 +65,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         viergewinnt = VierGewinnt.load();
 
         if (viergewinnt == null) {
-            System.out.println("No Game found...Creating new Game");
-            viergewinnt = new VierGewinnt(playingColumns, playingRows, Difficulty.easy);
-        }
-        else {
-            System.out.println("Game loaded");
-            System.out.println(viergewinnt);
+            viergewinnt = new VierGewinnt(playingColumns, playingRows);
         }
 
         syncBoard();
@@ -95,6 +91,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     }
 
     private void createPlayers() {
+        //:Todo Let the Player choose the name freely
         Player player1 = new Player("Robin", Color.RED);
         Player player2 = new Player("Philipp", Color.YELLOW);
         PLAYERS.add(player1);
@@ -122,8 +119,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
         points.add(Box.createRigidArea(new Dimension(5,0)));
 
-        PLAYERS.get(0).getSCORE().setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        points.add(PLAYERS.get(0).getSCORE());
+        PLAYERS.get(0).getSCORELABEL().setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        points.add(PLAYERS.get(0).getSCORELABEL());
 
         points.add(Box.createRigidArea(new Dimension(20,0)));
 
@@ -132,31 +129,28 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
         points.add(Box.createRigidArea(new Dimension(5,0)));
 
-        PLAYERS.get(1).getSCORE().setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        points.add(PLAYERS.get(1).getSCORE());
+        PLAYERS.get(1).getSCORELABEL().setAlignmentY(Component.BOTTOM_ALIGNMENT);
+        points.add(PLAYERS.get(1).getSCORELABEL());
 
         points.add(Box.createGlue());
     }
 
-    //:TODO add further Menu elements and give them functionalities
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         frame.add(menuBar, BorderLayout.NORTH);
 
-        JMenu menu1 = new JMenu("Spielfeld bearbeiten");
+        JMenu menu = new JMenu("Einstellungen");
         JMenuItem rows = new JMenuItem("Zeilen");
         JMenuItem columns = new JMenuItem("Spalten");
+        JMenuItem bots = new JMenuItem("Bot");
         rows.addActionListener(e -> MenuFactory.changePlayingRows());
         columns.addActionListener(e -> MenuFactory.changePlayingColumns());
-        menu1.add(rows);
-        menu1.add(columns);
+        bots.addActionListener(e -> MenuFactory.changeBotEnemy());
+        menu.add(rows);
+        menu.add(columns);
+        menu.add(bots);
 
-        JMenu menu2 = new JMenu("Profil");
-        JMenu menu3 = new JMenu("Hilfe");
-
-        menuBar.add(menu1);
-        menuBar.add(menu2);
-        menuBar.add(menu3);
+        menuBar.add(menu);
     }
 
     private void dropToken(MouseEvent e) {
@@ -165,62 +159,47 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         //Checks if index out of Bounds
         if(e.getY()/CalculationFactory.calculateTokenHeight(playingRows) >= playingRows && e.getX()/tokenWidth >= playingColumns) return;
 
-        //Checks if the top most backend.Token in a specific column is already taken/not null. If true then the column is full -> return
+        //Checks if the top most Token in a specific column is already taken/not null. If true then the column is full -> return
         if (board[0][e.getX()/tokenWidth] != null) {
             setTurnFinished(true);
             return;
         }
 
-        int index = e.getX()/tokenWidth;
+        int column = e.getX()/tokenWidth;
 
         //Animation
         new Thread(() -> {
-            // Set Token in Backend
-            viergewinnt.addToken(index + 1);
-
-            System.out.println(viergewinnt);
-
-            for (int i = 0; i < playingRows && board[i][index] == null; i++) {
+            for (int i = 0; i < playingRows && board[i][column] == null; i++) {
                 try { Thread.sleep(60); } catch(Exception ignored) {}
-                setTokenColor(i - 1, index, null);
-                setTokenColor(i, index, getPlayerColor());
+                setTokenColor(i - 1, column, null);
+                setTokenColor(i, column, getPlayerColor());
             }
-            setTurnFinished(true);
+
+            // Set Token in Backend
+            viergewinnt.addToken(column + 1);
 
             // Check if the player has won
             if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
                 // ToDo: Add Win-Screen
-                System.out.println(viergewinnt.getGameStatus() + " wins!");
 
                 if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
-                    PLAYERS.get(0).setSCORE(1);
+                    PLAYERS.get(0).setSCORE(PLAYERS.get(0).getScore() + 1);
                 } else {
-                    PLAYERS.get(1).setSCORE(1);
+                    PLAYERS.get(1).setSCORE(PLAYERS.get(1).getScore() + 1);
                 }
 
                 // Reset the game
-                viergewinnt = new VierGewinnt(playingColumns, playingRows);
+                viergewinnt = new VierGewinnt(playingColumns, playingRows, viergewinnt.getDifficulty());
                 setBoard(playingRows, playingColumns);
             }
 
             if (viergewinnt.isBotTurn()) {
                 botDropToken(viergewinnt.getBot().makeMove(viergewinnt) - 1);
-                viergewinnt.save();
-            }
-            else {
+            } else {
                 syncBoard();
+                setTurnFinished(true);
             }
         }).start();
-    }
-
-    public void createNewBoard(int rows, int columns, Difficulty difficulty) {
-        setPlayingColumns(columns);
-        setPlayingRows(rows);
-
-        viergewinnt = new VierGewinnt(playingColumns, playingRows, difficulty);
-        viergewinnt.save();
-
-        createGUI();
     }
 
     private void botDropToken(int index) {
@@ -232,28 +211,36 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             for (int i = 0; i < playingRows && board[i][index] == null; i++) {
                 try { Thread.sleep(60); } catch(Exception ignored) {}
                 setTokenColor(i - 1, index, null);
-                setTokenColor(i, index, getPlayerColor());
+                setTokenColor(i, index, getBotColor());
             }
-            setTurnFinished(true);
-
             // Check if the player has won
             if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
                 // ToDo: Add Win-Screen
-                System.out.println(viergewinnt.getGameStatus() + " wins!");
 
                 if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
-                    PLAYERS.get(0).setSCORE(1);
+                    PLAYERS.get(0).setSCORE(PLAYERS.get(0).getScore() + 1);
                 } else {
-                    PLAYERS.get(1).setSCORE(1);
+                    PLAYERS.get(1).setSCORE(PLAYERS.get(1).getScore() + 1);
                 }
 
                 // Reset the game
-                viergewinnt = new VierGewinnt(playingColumns, playingRows);
+                viergewinnt = new VierGewinnt(playingColumns, playingRows, viergewinnt.getDifficulty());
                 setBoard(playingRows, playingColumns);
             }
-
+            viergewinnt.save();
             syncBoard();
+            setTurnFinished(true);
         }).start();
+    }
+
+    public void createNewBoard(int rows, int columns, Difficulty difficulty) {
+        setPlayingRows(rows);
+        setPlayingColumns(columns);
+
+        viergewinnt = new VierGewinnt(playingColumns, playingRows, difficulty);
+        viergewinnt.save();
+
+        createGUI();
     }
 
     @Override
@@ -361,6 +348,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     }
 
     public Color getPlayerColor() {
+        return viergewinnt.getCurrentToken().toColor();
+    }
+
+    public Color getBotColor() {
         return viergewinnt.getCurrentToken().other().toColor();
     }
 
@@ -382,5 +373,9 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public MyPanel getPanel() {
         return panel;
+    }
+
+    public VierGewinnt getViergewinnt() {
+        return viergewinnt;
     }
 }

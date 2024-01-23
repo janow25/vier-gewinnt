@@ -28,7 +28,7 @@ public class Column implements Serializable {
     public void addToken(Token token) {
         int empty = 0;
 
-        while(!rows[empty].equals(Token.empty) && empty < rows.length-1) {
+        while(!getRows(empty).equals(Token.empty) && empty < getRows().length-1) {
             empty++;
         }
 
@@ -48,8 +48,12 @@ public class Column implements Serializable {
     public Column copy() {
         Column copy = new Column(rows.length);
         for (int i = 0; i < rows.length; i++) {
-            copy.rows[i] = rows[i];
+            copy.rows[i] = getRows(i);
         }
         return copy;
+    }
+
+    public Token getRows(int index) {
+        return rows[index];
     }
 }
