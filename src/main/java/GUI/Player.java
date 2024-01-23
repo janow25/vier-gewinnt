@@ -18,8 +18,12 @@ public class Player {
         return NAME;
     }
 
-    public JLabel getSCORE() {
+    public JLabel getSCORELABEL() {
         return SCORE;
+    }
+
+    public int getScore() {
+        return Integer.parseInt(SCORE.getText());
     }
 
     public void setSCORE(int SCORE) {

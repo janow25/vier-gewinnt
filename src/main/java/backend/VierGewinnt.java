@@ -9,6 +9,7 @@ import backend.bot.HardBot;
 import backend.bot.MediumBot;
 import backend.bot.RandomBot;
 import lombok.Getter;
+import lombok.Setter;
 
 public class VierGewinnt implements Serializable {
     //default id
@@ -27,7 +28,7 @@ public class VierGewinnt implements Serializable {
     @Getter
     private Difficulty difficulty;
 
-    @Getter
+    @Getter @Setter
     private int rounds = 0;
 
     @Getter
