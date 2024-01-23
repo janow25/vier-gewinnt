@@ -32,12 +32,12 @@ public class TestMediumBot {
     public void TestStopPlayerWin() {
         VierGewinnt vg = new VierGewinnt(Difficulty.medium);
 
-        //Set up a situation where the player can win
+        // Set up a situation where the player can win
         vg.addToken(1, VierGewinnt.getBotToken().other());
         vg.addToken(1, VierGewinnt.getBotToken().other());
         vg.addToken(1, VierGewinnt.getBotToken().other());
 
-        //Check if the bot stops the player from winning
+        // Check if the bot stops the player from winning
         vg.getBot().makeMove(vg);
         assertEquals(VierGewinnt.getBotToken(), vg.getColumns()[0].getRows()[3]);
     }
@@ -46,25 +46,25 @@ public class TestMediumBot {
     public void TestWinFirst() {
         VierGewinnt vg = new VierGewinnt(Difficulty.medium);
 
-        //Set up a situation where the player can win
+        // Set up a situation where the player can win
         vg.addToken(1, VierGewinnt.getBotToken().other());
         vg.addToken(1, VierGewinnt.getBotToken().other());
         vg.addToken(1, VierGewinnt.getBotToken().other());
 
-        //Set up a situation where the bot can win
+        // Set up a situation where the bot can win
         vg.addToken(2, VierGewinnt.getBotToken());
         vg.addToken(2, VierGewinnt.getBotToken());
         vg.addToken(2, VierGewinnt.getBotToken());
 
-        //Check if the bot wins instead of stopping the player from winning
+        // Check if the bot wins instead of stopping the player from winning
         vg.getBot().makeMove(vg);
         assertEquals(VierGewinnt.getBotToken(), vg.getColumns()[1].getRows()[3]);
 
-        //Check if the bot wins
+        // Check if the bot wins
         assertEquals(VierGewinnt.getBotToken().toGameStatus(), vg.checkForWin());
-
     }
 
+    /// Help method that return the top token in a column
     public int getLastFilledRow(Column column) {
         int lastFilledRow = 0;
         for (int i = 0; i < column.getRows().length; i++) {
