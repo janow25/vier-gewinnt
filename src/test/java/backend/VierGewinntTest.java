@@ -1,8 +1,6 @@
-import backend.GameStatus;
-import backend.Token;
-import backend.VierGewinnt;
+package backend;
+
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -18,7 +16,7 @@ public class VierGewinntTest {
         // Lösche die Testdatei nach jedem Test
         File testSaveFile = new File(VierGewinnt.getSaveGamePath());
         try {
-            Files.delete(testSaveFile.toPath());
+            Files.deleteIfExists(testSaveFile.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
