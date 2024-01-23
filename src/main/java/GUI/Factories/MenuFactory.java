@@ -2,12 +2,14 @@ package GUI.Factories;
 
 public class MenuFactory {
     public static void changePlayingRows() {
-        MenuCreationFactory.openPlayingDimensionEditScreen();
+        MenuCreationFactory.openEditScreen();
     }
 
     public static void changePlayingColumns() {
-        MenuCreationFactory.openPlayingDimensionEditScreen();
+        MenuCreationFactory.openEditScreen();
     }
 
-
+    public static void changeBotEnemy() {
+        MenuCreationFactory.openEditScreen();
+    }
 }
