@@ -6,13 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Connect4GUITest {
 
     private static final String SAVE_GAME_PATH = "./testSaveGame.bin";
-
     private VierGewinnt game;
 
     @BeforeEach
@@ -25,9 +26,13 @@ public class Connect4GUITest {
     public void tearDown() {
         // Lösche die Testdatei nach jedem Test
         File testSaveFile = new File(SAVE_GAME_PATH);
-        if (testSaveFile.exists()) {
-            testSaveFile.delete();
+        try {
+            Files.deleteIfExists(testSaveFile.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        // Überprüfe, ob die Datei gelöscht wurde
+        assertFalse(Files.exists(testSaveFile.toPath()), "Die Testdatei wurde nicht erfolgreich gelöscht.");
     }
 
     @Test
@@ -40,16 +45,13 @@ public class Connect4GUITest {
 
         // Überprüfe, ob die Datei erstellt wurde
         File saveFile = new File(SAVE_GAME_PATH);
-        assertEquals(true, saveFile.exists());
-
+        assertTrue(Files.exists(saveFile.toPath()), "Die Datei wurde nicht erstellt.");
         // Lade das gespeicherte Spiel
         VierGewinnt loadedGame = VierGewinnt.load();
 
         // Überprüfe, ob das geladene Spiel nicht null ist
         assertNotNull(loadedGame);
 
-        // Hier könntest du weitere Überprüfungen für den Zustand des geladenen Spiels durchführen
-        // assertEquals(expectedValue, loadedGame.getSomeValue());
     }
 
     @Test
@@ -57,7 +59,6 @@ public class Connect4GUITest {
         // Überprüfe, ob das Spiel null ist, wenn die Datei nicht existiert
         assertNull(VierGewinnt.load());
     }
-
 
     private static final int DEFAULT_ROWS = 6;
     private static final int DEFAULT_COLUMNS = 7;
@@ -73,18 +74,12 @@ public class Connect4GUITest {
             assertSame(instance1, instance2);
         }
 
-
         @Test
         public void createGUI() {
             Connect4GUI instance = Connect4GUI.getInstance();
             instance.createGUI();
             assertNotNull(instance.getFrame());
             assertNotNull(instance.getPanel());
-        }
-
-
-        @Test
-        void loadGame() {
         }
 
         @Test
