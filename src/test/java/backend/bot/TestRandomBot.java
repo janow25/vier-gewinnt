@@ -1,4 +1,4 @@
-package backend;
+package backend.bot;
 
 import backend.Column;
 import backend.Difficulty;

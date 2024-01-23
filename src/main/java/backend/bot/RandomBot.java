@@ -14,10 +14,13 @@ public class RandomBot extends BotBase {
     }
     public int makeMove(VierGewinnt vg) {
         int column;
+
+        // Find a random column that is not full
         do {
             column = (int) (Math.random() * vg.getNumberOfColumns()) + 1;
         } while (vg.columnIsFull(column));
 
+        // Add a token to the column
         vg.addToken(column, super.getMyToken());
         return column;
     }
