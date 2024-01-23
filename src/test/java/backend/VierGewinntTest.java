@@ -1,12 +1,55 @@
 import backend.GameStatus;
 import backend.Token;
 import backend.VierGewinnt;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class VierGewinntTest {
+    @AfterEach
+    public void tearDown() {
+        // Lösche die Testdatei nach jedem Test
+        File testSaveFile = new File(VierGewinnt.getSaveGamePath());
+        try {
+            Files.delete(testSaveFile.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Überprüfe, ob die Datei gelöscht wurde
+        assertFalse(Files.exists(testSaveFile.toPath()), "Die Testdatei wurde nicht erfolgreich gelöscht.");
+    }
+
+    @Test
+    public void testSaveAndLoad() {
+        // Führe einige Aktionen im Spiel aus (hier ein Beispiel)
+        // game.doSomeActions();
+
+        // Speichere das Spiel
+        VierGewinnt vg = new VierGewinnt();
+        vg.save();
+
+        // Überprüfe, ob die Datei erstellt wurde
+        File saveFile = new File(VierGewinnt.getSaveGamePath());
+        assertTrue(Files.exists(saveFile.toPath()), "Die Datei wurde nicht erstellt.");
+        // Lade das gespeicherte Spiel
+        VierGewinnt loadedGame = VierGewinnt.load();
+
+        // Überprüfe, ob das geladene Spiel nicht null ist
+        assertNotNull(loadedGame);
+    }
+
+    @Test
+    public void testLoadNonExistentFile() {
+        // Überprüfe, ob das Spiel null ist, wenn die Datei nicht existiert
+        assertNull(VierGewinnt.load());
+    }
 
     @Test
     public void TestIfAllFieldsAreEmpty() {
