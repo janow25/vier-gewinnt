@@ -89,7 +89,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         frame.add(panel);
     }
 
-    private void createPlayers() {
+    public void createPlayers() {
         Player player1 = new Player("Spieler1", Color.RED);
         Player player2 = new Player("Spieler2", Color.YELLOW);
         PLAYERS.add(player1);
