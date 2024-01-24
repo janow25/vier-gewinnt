@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private static Connect4GUI instance;
-    private VierGewinnt viergewinnt;
     private MyFrame frame;
     private MyPanel panel;
     private JPanel playingArea;
@@ -211,9 +210,6 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
                 setTokenColor(i - 1, index, null);
                 setTokenColor(i, index, getBotColor());
             }
-            // Check if the player has won
-            if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
-                // ToDo: Add Win-Screen
 
             if (checkIfGameIsOnGoing()) {
                 viergewinnt.save();
