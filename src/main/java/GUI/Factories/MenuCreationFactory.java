@@ -193,7 +193,9 @@ public class MenuCreationFactory {
         JButton confirm = new JButton("Bestätigen");
         confirm.setPreferredSize(new Dimension(150,30));
         confirm.addActionListener(e -> {
-            resetPlayerScore();
+            if (Connect4GUI.getInstance().getPLAYERS().size() != 0) {
+                resetPlayerScore();
+            }
             if (selectedRowOption.getText().equals("Ausgewählt: default") && selectedBotOption.getText().equals("Ausgewählt: default")) {
                 Connect4GUI.getInstance().createNewBoard(
                         Connect4GUI.getInstance().getDEFAULTROWS(),
@@ -305,6 +307,7 @@ public class MenuCreationFactory {
         });
         finish.addActionListener(e -> {
             //:Todo add functionality that deletes the saveGame if the X of the Window gets pressed instead of finish button
+            // Because of this bug: Win a game, on winning Screen press Beenden, On startscreen press Einstellungen, on Editscreen press Abbrechen.......
             new File ("./savegame.bin").delete();
             openStartScreen();
             frame.dispose();
