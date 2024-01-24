@@ -2,6 +2,6 @@ package GUI;
 
 public class Main {
     public static void main(String[] args) {
-        Connect4GUI.getInstance().createGUI();
+        Connect4GUI.getInstance().startGame();
     }
 }

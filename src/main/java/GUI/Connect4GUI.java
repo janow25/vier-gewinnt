@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private static Connect4GUI instance;
-    private VierGewinnt viergewinnt;
     private MyFrame frame;
     private MyPanel panel;
     private JPanel playingArea;
@@ -24,8 +23,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     private int playingRows = 6;
     private int playingColumns = 7;
     private Color[][] board = new Color[playingRows][playingColumns];
+    private VierGewinnt viergewinnt = new VierGewinnt(DEFAULTCOLUMNS,DEFAULTROWS);
     private final java.util.List<Player> PLAYERS = new ArrayList<>();
-    private boolean playerWon = false;
     private boolean turnFinished = true;
 
     //Singleton
@@ -38,9 +37,14 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     private Connect4GUI() {}
 
+    public void startGame() {
+        MenuFactory.openStartScreen();
+    }
+
     public void createGUI() {
-        //:Todo Let the Player decide if he wants to load the last game or create a new one
-        loadGame();
+        if (viergewinnt == null) {
+            viergewinnt = new VierGewinnt(playingColumns, playingRows);
+        }
 
         frame = new MyFrame();
         panel = new MyPanel();
@@ -62,12 +66,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public void loadGame() {
         viergewinnt = VierGewinnt.load();
-
-        if (viergewinnt == null) {
-            viergewinnt = new VierGewinnt(playingColumns, playingRows);
-        }
-
         syncBoard();
+        if (!turnFinished) setTurnFinished(true);
     }
 
     private void createPlayingField() {
@@ -90,9 +90,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     }
 
     private void createPlayers() {
-        //:Todo Let the Player choose the name freely
-        Player player1 = new Player("Robin", Color.RED);
-        Player player2 = new Player("Philipp", Color.YELLOW);
+        Player player1 = new Player("Spieler1", Color.RED);
+        Player player2 = new Player("Spieler2", Color.YELLOW);
         PLAYERS.add(player1);
         PLAYERS.add(player2);
     }
@@ -142,9 +141,18 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         JMenuItem rows = new JMenuItem("Zeilen");
         JMenuItem columns = new JMenuItem("Spalten");
         JMenuItem bots = new JMenuItem("Bot");
-        rows.addActionListener(e -> MenuFactory.changePlayingRows());
-        columns.addActionListener(e -> MenuFactory.changePlayingColumns());
-        bots.addActionListener(e -> MenuFactory.changeBotEnemy());
+        rows.addActionListener(e -> {
+            MenuFactory.changePlayingRows();
+            frame.dispose();
+        });
+        columns.addActionListener(e -> {
+            MenuFactory.changePlayingColumns();
+            frame.dispose();
+        });
+        bots.addActionListener(e -> {
+            MenuFactory.changeBotEnemy();
+            frame.dispose();
+        });
         menu.add(rows);
         menu.add(columns);
         menu.add(bots);
@@ -169,34 +177,24 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         //Animation
         new Thread(() -> {
             for (int i = 0; i < playingRows && board[i][column] == null; i++) {
-                try { Thread.sleep(60); } catch(Exception ignored) {}
+                try { Thread.sleep(50); } catch(Exception ignored) {}
                 setTokenColor(i - 1, column, null);
                 setTokenColor(i, column, getPlayerColor());
             }
-
             // Set Token in Backend
             viergewinnt.addToken(column + 1);
 
-            // Check if the player has won
-            if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
-                // ToDo: Add Win-Screen
-
-                if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
-                    PLAYERS.get(0).setSCORE(PLAYERS.get(0).getScore() + 1);
+            if (checkIfGameIsOnGoing()) {
+                if (viergewinnt.isBotTurn()) {
+                    botDropToken(viergewinnt.getBot().makeMove(viergewinnt) - 1);
                 } else {
-                    PLAYERS.get(1).setSCORE(PLAYERS.get(1).getScore() + 1);
+                    viergewinnt.save();
+                    syncBoard();
+                    setTurnFinished(true);
                 }
-
-                // Reset the game
-                viergewinnt = new VierGewinnt(playingColumns, playingRows, viergewinnt.getDifficulty());
-                setBoard(playingRows, playingColumns);
-            }
-
-            if (viergewinnt.isBotTurn()) {
-                botDropToken(viergewinnt.getBot().makeMove(viergewinnt) - 1);
             } else {
-                syncBoard();
-                setTurnFinished(true);
+                increaseScoreOfWinner();
+                gameEnded();
             }
         }).start();
     }
@@ -208,37 +206,47 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             System.out.println(viergewinnt);
 
             for (int i = 0; i < playingRows && board[i][index] == null; i++) {
-                try { Thread.sleep(60); } catch(Exception ignored) {}
+                try { Thread.sleep(50); } catch(Exception ignored) {}
                 setTokenColor(i - 1, index, null);
                 setTokenColor(i, index, getBotColor());
             }
-            // Check if the player has won
-            if (viergewinnt.getGameStatus() != GameStatus.onGoing) {
-                // ToDo: Add Win-Screen
 
-                if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
-                    PLAYERS.get(0).setSCORE(PLAYERS.get(0).getScore() + 1);
-                } else {
-                    PLAYERS.get(1).setSCORE(PLAYERS.get(1).getScore() + 1);
-                }
-
-                // Reset the game
-                viergewinnt = new VierGewinnt(playingColumns, playingRows, viergewinnt.getDifficulty());
-                setBoard(playingRows, playingColumns);
+            if (checkIfGameIsOnGoing()) {
+                viergewinnt.save();
+                syncBoard();
+                setTurnFinished(true);
+            } else {
+                increaseScoreOfWinner();
+                gameEnded();
             }
-            viergewinnt.save();
-            syncBoard();
-            setTurnFinished(true);
         }).start();
+    }
+
+    private boolean checkIfGameIsOnGoing() {
+        return viergewinnt.getGameStatus() == GameStatus.onGoing;
+    }
+
+    private void increaseScoreOfWinner() {
+        if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
+            PLAYERS.get(0).setSCORE(PLAYERS.get(0).getScore() + 1);
+        } else if (viergewinnt.getGameStatus() == GameStatus.playerTwoWon) {
+            PLAYERS.get(1).setSCORE(PLAYERS.get(1).getScore() + 1);
+        }
+    }
+
+    private void gameEnded() {
+        MenuFactory.openEndScreen(viergewinnt.getGameStatus());
     }
 
     public void createNewBoard(int rows, int columns, Difficulty difficulty) {
         setPlayingRows(rows);
         setPlayingColumns(columns);
+        setTurnFinished(true);
 
         viergewinnt = new VierGewinnt(playingColumns, playingRows, difficulty);
         viergewinnt.save();
 
+        syncBoard();
         createGUI();
     }
 
@@ -295,14 +303,6 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public void setPlayingColumns(int playingColumns) {
         this.playingColumns = playingColumns;
-    }
-
-    public boolean hasPlayerWon() {
-        return playerWon;
-    }
-
-    public void setPlayerWon(boolean playerWon) {
-        this.playerWon = playerWon;
     }
 
     public void setBoard(int playingRows, int playingColumns) {
@@ -372,5 +372,9 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public VierGewinnt getViergewinnt() {
         return viergewinnt;
+    }
+
+    public java.util.List<Player> getPLAYERS() {
+        return PLAYERS;
     }
 }
