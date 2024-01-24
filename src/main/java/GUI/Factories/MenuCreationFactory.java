@@ -1,12 +1,87 @@
 package GUI.Factories;
 
 import GUI.Connect4GUI;
+import GUI.Player;
 import backend.Difficulty;
+import backend.GameStatus;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class MenuCreationFactory {
+    public static void openStartScreen() {
+        JFrame frame = new JFrame();
+        frame.setLayout(new BorderLayout());
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+
+        JLabel welcome = new JLabel("4 Gewinnt");
+        JLabel creatorsNote = new JLabel("Ein Projekt von Janne, Philipp und Robin");
+        welcome.setAlignmentX(Component.CENTER_ALIGNMENT);
+        creatorsNote.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+
+        //Buttons
+        JButton newGame = new JButton("Neues Spiel");
+        JButton loadGame = new JButton("Spiel laden");
+        JButton settings = new JButton("Einstellungen");
+        newGame.setAlignmentY(Component.CENTER_ALIGNMENT);
+        loadGame.setAlignmentY(Component.CENTER_ALIGNMENT);
+        settings.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        newGame.addActionListener(e -> {
+            if (Connect4GUI.getInstance().getPLAYERS().size() != 0) {
+                resetPlayerScore();
+            }
+            Connect4GUI.getInstance().createNewBoard(
+                    Connect4GUI.getInstance().getDEFAULTROWS(),
+                    Connect4GUI.getInstance().getDEFAULTCOLUMNS(),
+                    Difficulty.noBot
+            );
+            frame.dispose();
+        });
+
+        loadGame.addActionListener(e -> {
+            Connect4GUI.getInstance().loadGame();
+            Connect4GUI.getInstance().createGUI();
+            frame.dispose();
+        });
+        if (!new File("./savegame.bin").exists()) {
+            loadGame.setEnabled(false);
+        }
+
+        settings.addActionListener(e -> {
+            openEditScreen();
+            frame.dispose();
+        });
+
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,0)));
+        buttonPanel.add(newGame);
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,0)));
+        buttonPanel.add(loadGame);
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,0)));
+        buttonPanel.add(settings);
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,40)));
+
+        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+        mainPanel.add(welcome);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+        mainPanel.add(creatorsNote);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+
+        frame.add(mainPanel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     public static void openEditScreen() {
         JFrame editScreen = new JFrame("Einstellungen");
         editScreen.setLayout(new BorderLayout());
@@ -118,6 +193,7 @@ public class MenuCreationFactory {
         JButton confirm = new JButton("Bestätigen");
         confirm.setPreferredSize(new Dimension(150,30));
         confirm.addActionListener(e -> {
+            resetPlayerScore();
             if (selectedRowOption.getText().equals("Ausgewählt: default") && selectedBotOption.getText().equals("Ausgewählt: default")) {
                 Connect4GUI.getInstance().createNewBoard(
                         Connect4GUI.getInstance().getDEFAULTROWS(),
@@ -157,13 +233,122 @@ public class MenuCreationFactory {
 
         editScreen.add(buttonPanel, BorderLayout.SOUTH);
 
-        Connect4GUI.getInstance().getFrame().dispose();
         editScreen.pack();
         editScreen.setVisible(true);
     }
 
+    public static void openEndScreen(GameStatus g) {
+        Player playerOne = Connect4GUI.getInstance().getPLAYERS().get(0);
+        Player playerTwo = Connect4GUI.getInstance().getPLAYERS().get(1);
+
+        JFrame frame = new JFrame();
+        frame.setLayout(new BorderLayout());
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+
+        //Configure Labels
+        JLabel winText = new JLabel(
+                getWinningText(g)
+                + " Aktueller Punktestand:"
+        );
+        JLabel points = new JLabel(
+                playerOne.getNAME().getText() + ": " + playerOne.getScore() + " "
+                + playerTwo.getNAME().getText()  + ": " + playerTwo.getScore()
+        );
+        JLabel continuePlaying = new JLabel(
+                "Was möchtest du als nächstes tun?"
+        );
+        winText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        points.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continuePlaying.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
+        //Configure button Panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+        JButton continueButton = new JButton("Weiterspielen");
+        JButton restart = new JButton("Neustart");
+        JButton finish = new JButton("Beenden");
+        continueButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+        restart.setAlignmentY(Component.CENTER_ALIGNMENT);
+        finish.setAlignmentY(Component.CENTER_ALIGNMENT);
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,0)));
+        buttonPanel.add(continueButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,0)));
+        buttonPanel.add(restart);
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,0)));
+        buttonPanel.add(finish);
+        buttonPanel.add(Box.createRigidArea(new Dimension(15,0)));
+
+        //adding the actionlisteners to Buttons
+        continueButton.addActionListener(e -> {
+            Connect4GUI.getInstance().createNewBoard(
+                    Connect4GUI.getInstance().getPlayingRows(),
+                    Connect4GUI.getInstance().getPlayingColumns(),
+                    Connect4GUI.getInstance().getViergewinnt().getDifficulty()
+            );
+            frame.dispose();
+        });
+        restart.addActionListener(e -> {
+            resetPlayerScore();
+            Connect4GUI.getInstance().createNewBoard(
+                    Connect4GUI.getInstance().getPlayingRows(),
+                    Connect4GUI.getInstance().getPlayingColumns(),
+                    Connect4GUI.getInstance().getViergewinnt().getDifficulty()
+            );
+
+            frame.dispose();
+        });
+        finish.addActionListener(e -> {
+            //:Todo add functionality that deletes the saveGame if the X of the Window gets pressed instead of finish button
+            new File ("./savegame.bin").delete();
+            openStartScreen();
+            frame.dispose();
+        });
+
+        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+        mainPanel.add(winText);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,30)));
+        mainPanel.add(points);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,30)));
+        mainPanel.add(continuePlaying);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,30)));
+        mainPanel.add(buttonPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+
+        frame.add(mainPanel, BorderLayout.CENTER);
+        Connect4GUI.getInstance().getFrame().dispose();
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private static String getWinningText(GameStatus g) {
+        switch (g) {
+            case playerOneWon -> {
+                return Connect4GUI.getInstance().getPLAYERS().get(0).getNAME().getText()
+                        + " hat gewonnen!";
+            }
+            case playerTwoWon -> {
+                return Connect4GUI.getInstance().getPLAYERS().get(1).getNAME().getText()
+                        + " hat gewonnen!";
+            }
+            default -> {
+                return "Ein Unentschieden!";
+            }
+        }
+    }
+
     private static String removeLetters(String s) {
         return s.replaceAll("\\D","");
+    }
+
+    private static void resetPlayerScore() {
+        Connect4GUI.getInstance().getPLAYERS().get(0).setSCORE(0);
+        Connect4GUI.getInstance().getPLAYERS().get(1).setSCORE(0);
     }
 
     private static String convertDifficultyToString() {

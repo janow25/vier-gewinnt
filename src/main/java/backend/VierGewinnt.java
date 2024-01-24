@@ -282,7 +282,6 @@ public class VierGewinnt implements Serializable {
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(this);
             objectOut.close();
-
         } catch (Exception ex) {
             System.out.println("Error while saving game");
             ex.printStackTrace();
