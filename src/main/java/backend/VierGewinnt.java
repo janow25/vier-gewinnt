@@ -34,6 +34,7 @@ public class VierGewinnt implements Serializable {
     @Getter
     private GameStatus gameStatus = GameStatus.onGoing;
 
+    @Getter
     private static String saveGamePath = "./savegame.bin";
 
     public VierGewinnt() {

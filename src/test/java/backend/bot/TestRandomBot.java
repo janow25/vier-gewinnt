@@ -1,3 +1,5 @@
+package backend.bot;
+
 import backend.Column;
 import backend.Difficulty;
 import backend.Token;
@@ -28,6 +30,7 @@ public class TestRandomBot {
     }
 
 
+    /// Help method that return the top token in a column
     public int getLastFilledRow(Column column) {
         int lastFilledRow = 0;
         for (int i = 0; i < column.getRows().length; i++) {

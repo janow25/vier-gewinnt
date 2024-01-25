@@ -2,7 +2,6 @@ package GUI;
 
 import GUI.Factories.CalculationFactory;
 import GUI.Factories.MenuFactory;
-
 import backend.Difficulty;
 import backend.GameStatus;
 import backend.VierGewinnt;
@@ -10,7 +9,9 @@ import backend.VierGewinnt;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Connect4GUI extends MouseInputAdapter implements ActionListener {
@@ -35,7 +36,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         return instance;
     }
 
-    private Connect4GUI() {}
+    Connect4GUI() {}
 
     public void startGame() {
         MenuFactory.openStartScreen();
@@ -368,6 +369,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public int getDEFAULTCOLUMNS() {
         return DEFAULTCOLUMNS;
+    }
+
+    public MyPanel getPanel() {
+        return panel;
     }
 
     public VierGewinnt getViergewinnt() {
