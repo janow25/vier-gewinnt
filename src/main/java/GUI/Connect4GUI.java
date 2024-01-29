@@ -168,7 +168,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         if(e.getY()/CalculationFactory.calculateTokenHeight(playingRows) >= playingRows && e.getX()/tokenWidth >= playingColumns) return;
 
         //Checks if the top most Token in a specific column is already taken/not null. If true then the column is full -> return
-        if (board[0][e.getX()/tokenWidth] != null) {
+        if (isColumnFull(e)) {
             setTurnFinished(true);
             return;
         }
@@ -227,6 +227,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         return viergewinnt.getGameStatus() == GameStatus.onGoing;
     }
 
+    private boolean isColumnFull(MouseEvent e) {
+        return board[0][e.getX()/CalculationFactory.calculateTokenWidth(playingColumns)] != null;
+    }
+
     private void increaseScoreOfWinner() {
         if (viergewinnt.getGameStatus() == GameStatus.playerOneWon) {
             PLAYERS.get(0).setSCORE(PLAYERS.get(0).getScore() + 1);
@@ -283,11 +287,17 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        hoverToken(e);
+        if (turnFinished && !isColumnFull(e)) {
+            hoverToken(e);
+        } else {
+            panel.setHoverTokenX(-1);
+        }
     }
 
     private void hoverToken(MouseEvent e) {
-        //:TODO create the method so a visible backend.Token in the correct Player color hovers over a column where the mouse currently is
+        panel.setHoverTokenX(
+                (e.getX()/CalculationFactory.calculateTokenWidth(playingColumns) + 1) * CalculationFactory.calculateTokenWidth(playingColumns)
+        );
     }
 
     public int getPlayingRows() {
@@ -323,10 +333,6 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
         }
     }
 
-    public Color[][] getBoard() {
-        return board;
-    }
-
     /**
      * Should only be used from the drawBoard() Method in MyPanel Class
      * @param row Y Coordinate of the Mouse
@@ -336,9 +342,8 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
     public Color getTokenColor(int row, int column) {
         if (board[row][column] == null) {
             return Color.WHITE;
-        } else {
-            return board[row][column];
         }
+        return board[row][column];
     }
 
     public void setTokenColor(int row, int column, Color color) {

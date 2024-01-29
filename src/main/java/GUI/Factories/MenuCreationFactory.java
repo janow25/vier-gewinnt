@@ -307,8 +307,7 @@ public class MenuCreationFactory {
             frame.dispose();
         });
         finish.addActionListener(e -> {
-            //:Todo add functionality that deletes the saveGame if the X of the Window gets pressed instead of finish button
-            // Because of this bug: Win a game, on winning Screen press Beenden, On startscreen press Einstellungen, on Editscreen press Abbrechen.......
+            //:TODO fix bug: Win a game, on winning Screen press Beenden, On startscreen press Einstellungen, on Editscreen press Abbrechen.......
             new File ("./savegame.bin").delete();
             openStartScreen();
             frame.dispose();
