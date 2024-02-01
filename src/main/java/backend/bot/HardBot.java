@@ -21,10 +21,10 @@ public class HardBot extends BotBase {
 
         GameStatus winner = vg.checkForWin();
         if (winner == super.getMyToken().toGameStatus()) {
-            return Integer.MAX_VALUE;
+            return 200;
         }
         else if (winner == super.getMyToken().other().toGameStatus()) {
-            return Integer.MIN_VALUE;
+            return -100;
         }
 
         // Score center column
@@ -97,22 +97,30 @@ public class HardBot extends BotBase {
             }
         }
         if (myTokens == 4) {
-            score += 100;
+            score += 200;
         } else if (myTokens == 3 && emptyTokens == 1) {
             score += 5;
         } else if (myTokens == 2 && emptyTokens == 2) {
             score += 2;
         }
-        if (enemyTokens == 3 && emptyTokens == 1) {
-            score -= 4;
+
+        if (enemyTokens == 4) {
+            score -= 100;
         }
+        else if (enemyTokens == 3 && emptyTokens == 1) {
+            score -= 5;
+        }
+        else if (enemyTokens == 2 && emptyTokens == 2) {
+            score -= 2;
+        }
+
         return score;
     }
 
     public int minMax(VierGewinnt vg, int depth, boolean isMaximizing) {
 
         // Check if the game is over or if the depth is 0
-        if (depth == 0 || vg.checkForWin() != Token.empty.toGameStatus()) {
+        if (depth == 0 || vg.checkForWin() != GameStatus.onGoing) {
             return evaluateBoard(vg);
         }
 
@@ -148,6 +156,8 @@ public class HardBot extends BotBase {
     }
 
     public int makeMove(VierGewinnt vg) {
+        //System.out.println(evaluateBoard(vg));
+
         // Check if there is a column where the bot can win
         for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
             if (!vg.columnIsFull(i)) {
@@ -191,6 +201,11 @@ public class HardBot extends BotBase {
                 }
             }
         }
+        if (vg.columnIsFull(column)) {
+            System.out.println("ERROR: Column is full" + column);
+        }
+
+        System.out.println();
 
         vg.addToken(column, super.getMyToken());
 
