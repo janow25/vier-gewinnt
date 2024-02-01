@@ -1,5 +1,6 @@
 package backend.bot;
 
+import backend.GameStatus;
 import backend.Token;
 import backend.VierGewinnt;
 
@@ -18,26 +19,12 @@ public class HardBot extends BotBase {
     public int evaluateBoard(VierGewinnt vg) {
         int score = 0;
 
-        // Check if there is a column where the bot can win
-        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
-            if (!vg.columnIsFull(i)) {
-                VierGewinnt tmpVg = vg.copy();
-                tmpVg.addToken(i, super.getMyToken());
-                if (tmpVg.checkForWin() == super.getMyToken().toGameStatus()) {
-                    return Integer.MAX_VALUE;
-                }
-            }
+        GameStatus winner = vg.checkForWin();
+        if (winner == super.getMyToken().toGameStatus()) {
+            return Integer.MAX_VALUE;
         }
-
-        // Check if there is a column where the player can win
-        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
-            if (!vg.columnIsFull(i)) {
-                VierGewinnt tmpVg = vg.copy();
-                tmpVg.addToken(i, super.getMyToken().other());
-                if (tmpVg.checkForWin() == super.getMyToken().other().toGameStatus()) {
-                    return Integer.MIN_VALUE;
-                }
-            }
+        else if (winner == super.getMyToken().other().toGameStatus()) {
+            return Integer.MIN_VALUE;
         }
 
         // Score center column
@@ -161,8 +148,34 @@ public class HardBot extends BotBase {
     }
 
     public int makeMove(VierGewinnt vg) {
-        int column = 1;
+        // Check if there is a column where the bot can win
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
+            if (!vg.columnIsFull(i)) {
+                VierGewinnt tmpVg = vg.copy();
+                tmpVg.addToken(i, super.getMyToken());
+                if (tmpVg.checkForWin() == super.getMyToken().toGameStatus()) {
+                    // Add a token to the column
+                    vg.addToken(i, super.getMyToken());
+                    return i;
+                }
+            }
+        }
 
+        // Check if there is a column where the player can win
+        for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
+            if (!vg.columnIsFull(i)) {
+                VierGewinnt tmpVg = vg.copy();
+                tmpVg.addToken(i, super.getMyToken().other());
+                if (tmpVg.checkForWin() == super.getMyToken().other().toGameStatus()) {
+                    // Add a token to the column
+                    vg.addToken(i, super.getMyToken());
+                    return i;
+                }
+            }
+        }
+
+
+        int column = 1;
         int bestScore = Integer.MIN_VALUE;
 
         for (int i = 1; i <= vg.getNumberOfColumns(); i++) {
