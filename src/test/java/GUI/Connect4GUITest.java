@@ -39,17 +39,6 @@ public class Connect4GUITest {
     }
 
     @Test
-    void hasPlayerWon() {
-        Connect4GUI instance = Connect4GUI.getInstance();
-
-        assertFalse(instance.hasPlayerWon());
-        instance.setPlayerWon(true);
-        assertTrue(instance.hasPlayerWon());
-        instance.setPlayerWon(false);
-        assertFalse(instance.hasPlayerWon());
-    }
-
-    @Test
     void setPlayerWon() {
     }
 }

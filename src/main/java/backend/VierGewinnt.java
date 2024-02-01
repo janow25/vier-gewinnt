@@ -20,7 +20,7 @@ public class VierGewinnt implements Serializable {
     private Column[] columns;
 
     @Getter
-    static Token botToken = Token.playerTwo;
+    private final static Token botToken = Token.playerTwo;
 
     @Getter
     private Bot bot;
