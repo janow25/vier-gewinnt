@@ -266,6 +266,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             setTurnFinished(false);
             dropToken(e);
         }
+        panel.setHoverTokenX(-1);
     }
 
     @Override
@@ -287,7 +288,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (turnFinished && !isColumnFull(e)) {
+        if (turnFinished && !isColumnFull(e) && !viergewinnt.isBotTurn()) {
             hoverToken(e);
         } else {
             panel.setHoverTokenX(-1);
