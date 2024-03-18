@@ -1,3 +1,9 @@
+package backend.bot;
+
+import backend.Column;
+import backend.Difficulty;
+import backend.Token;
+import backend.VierGewinnt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,18 +18,19 @@ public class TestRandomBot {
         int column = vg.getBot().makeMove(vg);
 
         // Check if bot has made a move
-        assertEquals(VierGewinnt.botToken, vg.getColumns()[column-1].getRows()[getLastFilledRow(vg.getColumns()[column-1])]);
+        assertEquals(VierGewinnt.getBotToken(), vg.getColumns()[column-1].getRows()[getLastFilledRow(vg.getColumns()[column-1])]);
 
         column = vg.getBot().makeMove(vg);
         // Check if bot has made another move
-        assertEquals(VierGewinnt.botToken, vg.getColumns()[column-1].getRows()[getLastFilledRow(vg.getColumns()[column-1])]);
+        assertEquals(VierGewinnt.getBotToken(), vg.getColumns()[column-1].getRows()[getLastFilledRow(vg.getColumns()[column-1])]);
 
         column = vg.getBot().makeMove(vg);
         // Check if bot has made another move
-        assertEquals(VierGewinnt.botToken, vg.getColumns()[column-1].getRows()[getLastFilledRow(vg.getColumns()[column-1])]);
+        assertEquals(VierGewinnt.getBotToken(), vg.getColumns()[column-1].getRows()[getLastFilledRow(vg.getColumns()[column-1])]);
     }
 
 
+    /// Help method that return the top token in a column
     public int getLastFilledRow(Column column) {
         int lastFilledRow = 0;
         for (int i = 0; i < column.getRows().length; i++) {
