@@ -4,6 +4,7 @@ import GUI.Connect4GUI;
 import GUI.Player;
 import backend.Difficulty;
 import backend.GameStatus;
+import backend.VierGewinnt;
 
 import javax.swing.*;
 import java.awt.*;
@@ -307,8 +308,14 @@ public class MenuCreationFactory {
             frame.dispose();
         });
         finish.addActionListener(e -> {
-            //:TODO fix bug: Win a game, on winning Screen press Beenden, On startscreen press Einstellungen, on Editscreen press Abbrechen.......
             new File ("./savegame.bin").delete();
+            Connect4GUI.getInstance().setViergewinnt(new VierGewinnt(
+                    Connect4GUI.getInstance().getPlayingColumns(),
+                    Connect4GUI.getInstance().getPlayingRows(),
+                    Connect4GUI.getInstance().getViergewinnt().getDifficulty()
+            ));
+            resetPlayerScore();
+            Connect4GUI.getInstance().syncBoard();
             openStartScreen();
             frame.dispose();
         });
@@ -324,7 +331,6 @@ public class MenuCreationFactory {
         mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
 
         frame.add(mainPanel, BorderLayout.CENTER);
-        Connect4GUI.getInstance().getFrame().dispose();
         frame.pack();
         frame.setVisible(true);
     }

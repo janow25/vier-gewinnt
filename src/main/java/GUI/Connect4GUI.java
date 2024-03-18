@@ -196,6 +196,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             } else {
                 increaseScoreOfWinner();
                 gameEnded();
+                setTurnFinished(true);
             }
         }).start();
     }
@@ -219,6 +220,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
             } else {
                 increaseScoreOfWinner();
                 gameEnded();
+                setTurnFinished(true);
             }
         }).start();
     }
@@ -241,6 +243,7 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     private void gameEnded() {
         MenuFactory.openEndScreen(viergewinnt.getGameStatus());
+        frame.dispose();
     }
 
     public void createNewBoard(int rows, int columns, Difficulty difficulty) {
@@ -383,6 +386,10 @@ public class Connect4GUI extends MouseInputAdapter implements ActionListener {
 
     public VierGewinnt getViergewinnt() {
         return viergewinnt;
+    }
+
+    public void setViergewinnt(VierGewinnt viergewinnt) {
+        this.viergewinnt = viergewinnt;
     }
 
     public java.util.List<Player> getPLAYERS() {
