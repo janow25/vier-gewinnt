@@ -1,6 +1,15 @@
+package backend;
+
+import java.awt.*;
 import java.io.*;
 import java.util.Scanner;
+
+import backend.bot.Bot;
+import backend.bot.HardBot;
+import backend.bot.MediumBot;
+import backend.bot.RandomBot;
 import lombok.Getter;
+import lombok.Setter;
 
 public class VierGewinnt implements Serializable {
     //default id
@@ -10,18 +19,25 @@ public class VierGewinnt implements Serializable {
     @Getter
     private Column[] columns;
 
-    static Token botToken = Token.playerTwo;
+    @Getter
+    private final static Token botToken = Token.playerTwo;
 
     @Getter
     private Bot bot;
 
     @Getter
-    private Difficulty difficulty = Difficulty.noBot;
+    private Difficulty difficulty;
 
-    @Getter
+    @Getter @Setter
     private int rounds = 0;
 
-    VierGewinnt() {
+    @Getter
+    private GameStatus gameStatus = GameStatus.onGoing;
+
+    @Getter
+    private static String saveGamePath = "./savegame.bin";
+
+    public VierGewinnt() {
         columns = new Column[5];
 
         for (int i = 0; i < columns.length; i++) {
@@ -33,15 +49,11 @@ public class VierGewinnt implements Serializable {
         bot = null;
     }
 
-    VierGewinnt(int columns) {
+    public VierGewinnt(int columns) {
         this(columns, columns);
-
-        difficulty = Difficulty.noBot;
-
-        bot = null;
     }
 
-    VierGewinnt(int columns, int rows) {
+    public VierGewinnt(int columns, int rows) {
         this.columns = new Column[columns];
 
         for (int i = 0; i < this.columns.length; i++) {
@@ -53,7 +65,7 @@ public class VierGewinnt implements Serializable {
         bot = null;
     }
 
-    VierGewinnt(Difficulty difficulty) {
+    public VierGewinnt(Difficulty difficulty) {
         this();
         this.difficulty = difficulty;
 
@@ -65,7 +77,7 @@ public class VierGewinnt implements Serializable {
         }
     }
 
-    VierGewinnt(int columns, Difficulty difficulty) {
+    public VierGewinnt(int columns, Difficulty difficulty) {
         this(columns);
         this.difficulty = difficulty;
 
@@ -77,7 +89,7 @@ public class VierGewinnt implements Serializable {
         }
     }
 
-    VierGewinnt(int columns, int rows, Difficulty difficulty) {
+    public VierGewinnt(int columns, int rows, Difficulty difficulty) {
         this(columns, rows);
         this.difficulty = difficulty;
 
@@ -89,11 +101,11 @@ public class VierGewinnt implements Serializable {
         }
     }
 
+    /// This Method can be used to play the game in Console
     public void play() {
         while (checkForWin() == GameStatus.onGoing) {
             Token botToken = Token.playerTwo;
 
-            // Use toString() to print the game board
             System.out.println(this);
 
             Token token = getCurrentToken();
@@ -101,6 +113,7 @@ public class VierGewinnt implements Serializable {
             if (difficulty == Difficulty.noBot) {
                 addToken(getPlayerInput(token), token);
             } else {
+                // Check if it is the players or bots turn
                 if (token != botToken) {
                     addToken(getPlayerInput(token), token);
                 } else {
@@ -108,14 +121,30 @@ public class VierGewinnt implements Serializable {
                 }
             }
         }
+
+        // Print the game board one last time and print the winner
         System.out.println(this);
-        System.out.println(checkForWin() + " wins!");
+
+        if (checkForWin() == GameStatus.draw) {
+            System.out.println("Draw!");
+        }
+        else {
+            System.out.println(checkForWin().toWinnerName() + " wins!");
+        }
     }
 
+    /// This Method can be used to get the current Token
     public Token getCurrentToken() {
         return rounds % 2 == 0 ? Token.playerOne : Token.playerTwo;
     }
 
+    /// This Method can be used to check if it is the bots turn
+    /// This Method returns only true if the bot is enabled
+    public Boolean isBotTurn() {
+        return getCurrentToken() == botToken && difficulty != Difficulty.noBot;
+    }
+
+    /// This Method can be used to get a valid column from the player
     private int getPlayerInput(Token token) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Player " + token + " enter column: ");
@@ -129,62 +158,75 @@ public class VierGewinnt implements Serializable {
         return column;
     }
 
-    /// This Method adds a new Token to the current Column. The column is not zero based. So if you want to add a Token to the first column you have to pass 1 as the column parameter.
+    /// This Method adds the current Token to column inserted
+    public void addToken(int column) {
+        addToken(column, getCurrentToken());
+        save();
+    }
+
+    /// This Method adds a new Token to the Column. The column is not a zero based Index.
+    /// So if you want to add a Token to the first column you have to pass 1 as the column parameter.
+    /// The Method also adjusts the rounds and checks if the game is over
     public void addToken(int column, Token token) {
         rounds++;
-        columns[column-1].addToken(token);
+        getColumns(column-1).addToken(token);
 
-        save("savegame.txt");
+        gameStatus = checkForWin();
     }
 
+    /// This Method checks if the column is full
     public boolean columnIsFull(int column) {
-        return columns[column-1].isFull();
+        return getColumns(column-1).isFull();
     }
 
+    /// This Method checks if the game is over and returns the winner/draw
     public GameStatus checkForWin() {
-        GameStatus winner = GameStatus.onGoing;
-
-        if (rounds == getNumberOfColumns() * getNumberOfRows()) {
-            return GameStatus.draw;
-        }
-
         for (int i = 0; i < columns.length; i++) {
-            for (int j = 0; j < columns[i].getRows().length; j++) {
-                if (columns[i].getRows()[j] != Token.empty) {
-                    if (j < columns[i].getRows().length - 3) {
-                        if (columns[i].getRows()[j] == columns[i].getRows()[j + 1] && columns[i].getRows()[j] == columns[i].getRows()[j + 2] && columns[i].getRows()[j] == columns[i].getRows()[j + 3]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+            for (int j = 0; j < getColumns(i).getRows().length; j++) {
+                if (getColumns(i).getRows()[j] != Token.empty) {
+                    if (j < getColumns(i).getRows().length - 3) {
+                        if (getColumns(i).getRows()[j] == getColumns(i).getRows()[j + 1] && getColumns(i).getRows()[j] == getColumns(i).getRows()[j + 2] && getColumns(i).getRows()[j] == getColumns(i).getRows()[j + 3]) {
+                            return getColumns(i).getRows()[j].toGameStatus();
                         }
                     }
                     if (i < columns.length - 3) {
-                        if (columns[i].getRows()[j] == columns[i + 1].getRows()[j] && columns[i].getRows()[j] == columns[i + 2].getRows()[j] && columns[i].getRows()[j] == columns[i + 3].getRows()[j]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+                        if (getColumns(i).getRows()[j] == columns[i + 1].getRows()[j] && getColumns(i).getRows()[j] == columns[i + 2].getRows()[j] && getColumns(i).getRows()[j] == columns[i + 3].getRows()[j]) {
+                            return getColumns(i).getRows()[j].toGameStatus();
                         }
                     }
-                    if (i < columns.length - 3 && j < columns[i].getRows().length - 3) {
-                        if (columns[i].getRows()[j] == columns[i + 1].getRows()[j + 1] && columns[i].getRows()[j] == columns[i + 2].getRows()[j + 2] && columns[i].getRows()[j] == columns[i + 3].getRows()[j + 3]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+                    if (i < columns.length - 3 && j < getColumns(i).getRows().length - 3) {
+                        if (getColumns(i).getRows()[j] == columns[i + 1].getRows()[j + 1] && getColumns(i).getRows()[j] == columns[i + 2].getRows()[j + 2] && getColumns(i).getRows()[j] == columns[i + 3].getRows()[j + 3]) {
+                            return getColumns(i).getRows()[j].toGameStatus();
                         }
                     }
                     if (i < columns.length - 3 && j > 2) {
-                        if (columns[i].getRows()[j] == columns[i + 1].getRows()[j - 1] && columns[i].getRows()[j] == columns[i + 2].getRows()[j - 2] && columns[i].getRows()[j] == columns[i + 3].getRows()[j - 3]) {
-                            winner = columns[i].getRows()[j].toGameStatus();
+                        if (getColumns(i).getRows()[j] == columns[i + 1].getRows()[j - 1] && getColumns(i).getRows()[j] == columns[i + 2].getRows()[j - 2] && getColumns(i).getRows()[j] == columns[i + 3].getRows()[j - 3]) {
+                            return getColumns(i).getRows()[j].toGameStatus();
                         }
                     }
                 }
             }
         }
-        return winner;
+
+        // Check for draw
+        if (rounds == getNumberOfColumns() * getNumberOfRows()) {
+            return GameStatus.draw;
+        }
+
+        return GameStatus.onGoing;
     }
 
+    /// This Method returns the number of rows
     public int getNumberOfRows() {
-        return columns[0].getRows().length;
+        return getColumns(0).getRows().length;
     }
 
+    /// This Method returns the number of columns
     public int getNumberOfColumns() {
-        return columns.length;
+        return getColumns().length;
     }
 
+    /// This Method returns the current game board as a String
     public String toString() {
         String playerOne = "O";
         String playerTwo = "X";
@@ -218,35 +260,43 @@ public class VierGewinnt implements Serializable {
         return str.toString();
     }
 
+    /// This Method returns the border of the game board
+    /// for example: ___________
     public String getBorder() {
         return "_".repeat(columns.length*2+1);
     }
 
+    /// This Method returns a copy of the current game board
     public VierGewinnt copy() {
         VierGewinnt copy = new VierGewinnt(getNumberOfColumns(), getNumberOfRows(), difficulty);
         copy.rounds = rounds;
         for (int i = 0; i < columns.length; i++) {
-            copy.columns[i] = columns[i].copy();
+            copy.columns[i] = getColumns(i).copy();
         }
         return copy;
     }
 
-    public void save(String path) {
+    /// This Method saves the current game board to the saveGamePath
+    public void save() {
         try {
-            FileOutputStream fileOut = new FileOutputStream(path);
+            FileOutputStream fileOut = new FileOutputStream(saveGamePath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(this);
             objectOut.close();
-
         } catch (Exception ex) {
             System.out.println("Error while saving game");
             ex.printStackTrace();
         }
     }
 
-    public static VierGewinnt load(String path) {
+    /// This Method loads the game board from the saveGamePath
+    public static VierGewinnt load() {
+        if (!new File(saveGamePath).exists()) {
+            return null;
+        }
+
         try {
-            FileInputStream fi = new FileInputStream(new File(path));
+            FileInputStream fi = new FileInputStream(new File(saveGamePath));
             ObjectInputStream oi = new ObjectInputStream(fi);
 
             // Read objects
@@ -258,5 +308,15 @@ public class VierGewinnt implements Serializable {
         }
 
         return null;
+    }
+
+    /// This Method returns the column at the given index
+    public Column getColumns(int index) {
+        return columns[index];
+    }
+
+    /// This Method returns the color of the token at the given position
+    public Color getColor(int column, int row) {
+        return columns[column].getRows()[row].toColor();
     }
 }
